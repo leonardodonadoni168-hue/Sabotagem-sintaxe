@@ -58,6 +58,7 @@ const elements = {
   btnRevealMyTurn: document.getElementById("btn-reveal-my-turn"),
   
   playerHandInterface: document.getElementById("player-hand-interface"),
+  playerTurnPanel: document.getElementById("player-turn-panel"),
   activePlayerName: document.getElementById("active-player-name"),
   playerRoleBadge: document.getElementById("player-role-badge"),
   btnUseClassSkill: document.getElementById("btn-use-class-skill"),
