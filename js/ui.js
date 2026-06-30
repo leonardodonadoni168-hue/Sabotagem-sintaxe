@@ -1116,5 +1116,14 @@ elements.btnRestartGame.addEventListener("click", () => {
   showScreen(elements.screenLobby);
 });
 
+elements.btnNextRound.addEventListener("click", () => {
+  advanceLevel();
+  if (gameState.phase === "GAME_OVER") {
+    renderGameOverScreen();
+  } else {
+    renderRoleRevealScreen();
+  }
+});
+
 // Inicialização dos botões do Lobby
 updateLobbyButtons();
