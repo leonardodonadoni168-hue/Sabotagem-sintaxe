@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AlgoBot: Sabotagem & Sintaxe</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <header>
+    <div class="logo-container">
+      <h1>ALGOBOT // <span>SABOTAGEM & SINTAXE</span></h1>
+    </div>
+    <div class="header-stats" id="header-stats" style="display: none;">
+      <div class="stat-box" id="info-round">Rodada: 1/5</div>
+      <div class="stat-box prog" id="score-prog">Programadores: 0</div>
+      <div class="stat-box sab" id="score-sab">Sabotadores: 0</div>
+    </div>
+  </header>
+
+  <main>
+    
+    <!-- ==================== TELA 1: LOBBY ==================== -->
+    <section id="screen-lobby" class="screen active">
+      <div class="panel">
+        <h2 class="lobby-title">Algoritmo Sabotado</h2>
+        <p class="lobby-subtitle">Um jogo educacional de lógica de programação, depuração e papéis secretos.</p>
+        
+        <div class="lobby-grid">
+          <div>
+            <h3>Jogadores (3 a 6)</h3>
+            <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 1rem;">
+              Insira os nomes dos jogadores que participarão da simulação.
+            </p>
+            <div class="player-input-list" id="player-inputs">
+              <div class="player-input-row">
+                <input type="text" class="player-name-input" value="Jogador 1" placeholder="Nome do Jogador 1">
+              </div>
+              <div class="player-input-row">
+                <input type="text" class="player-name-input" value="Jogador 2" placeholder="Nome do Jogador 2">
+              </div>
+              <div class="player-input-row">
+                <input type="text" class="player-name-input" value="Jogador 3" placeholder="Nome do Jogador 3">
+              </div>
+            </div>
+            <div style="margin-top: 1rem; display: flex; gap: 1rem;">
+              <button class="btn" id="btn-add-player">➕ Adicionar Jogador</button>
+              <button class="btn btn-green" id="btn-start-game">▶ Iniciar Jogo</button>
+            </div>
+          </div>
+          
+          <div class="lobby-instructions">
+            <h3>Como Jogar</h3>
+            <ul>
+              <li><strong>Papéis Secretos:</strong> Os jogadores são divididos em <strong>Programadores</strong> (ajudam o robô) e <strong>Sabotadores</strong> (tentam travar o robô).</li>
+              <li><strong>Fila de Comandos:</strong> A cada turno, você adiciona comandos (Mover, Virar, Repetir ou Condições) na fila para o robô. Os comandos podem ser inseridos de forma secreta (oculta) para esconder trapaças ou códigos defeituosos.</li>
+              <li><strong>Depurador Visual:</strong> A fila final de código é compilada e executada passo a passo. Todos observam o robô se mover e tentam achar erros no algoritmo.</li>
+              <li><strong>Debate & Voto:</strong> Analisem o console do depurador, descubram quem inseriu a linha de código errada e votem nos suspeitos de sabotagem!</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TELA 2: REVELAÇÃO DE CARGOS ==================== -->
+    <section id="screen-role-reveal" class="screen">
+      <div class="panel">
+        <h2 class="text-cyan">Inicialização dos Papéis Secretos</h2>
+        <p class="text-muted">Antes de iniciar os testes do robô, cada membro da equipe deve verificar seu cargo confidencial. Clique no seu botão individualmente para ver seu papel sem que os outros vejam.</p>
+        
+        <div class="role-reveal-grid" id="role-reveal-buttons">
+          <!-- Gerado via JS -->
+        </div>
+        
+        <div style="margin-top: 2.5rem; text-align: center;">
+          <button class="btn btn-green btn-disabled" id="btn-begin-programming">Começar Fase de Programação ➡️</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TELA 3: PROGRAMAÇÃO (JOGANDO) ==================== -->
+    <section id="screen-playing" class="screen">
+      <div class="playing-layout">
+        
+        <!-- Painel Lateral: Nível e Mini-Mapa -->
+        <div class="panel level-panel">
+          <h3 id="current-level-name" class="text-cyan">Nível 1</h3>
+          <p id="current-level-desc" class="text-muted" style="font-size: 0.85rem; line-height: 1.4;"></p>
+          <div class="mini-map-container">
+            <div id="playing-mini-map"></div>
+          </div>
+          <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.8rem; color: var(--neon-yellow);">
+            ⚠️ O robô começará na célula cinza (S) e deve chegar à célula verde (Bateria).
+          </div>
+        </div>
+        
+        <!-- Painel Principal: Fila de Comandos e Turno do Jogador -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          
+          <!-- Fila de Comandos Atual -->
+          <div class="panel queue-panel">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+              <h3 class="text-cyan">Fila de Código em Construção (<span id="queue-size">0</span>/<span id="queue-max">8</span>)</h3>
+              <div style="font-family: var(--font-code); font-size: 0.8rem;" class="text-muted">STATUS: AGUARDANDO DEPLOY</div>
+            </div>
+            <div class="queue-container" id="playing-queue-container">
+              <!-- Cards adicionados pelos jogadores -->
+            </div>
+          </div>
+          
+          <!-- Turno do Jogador Ativo -->
+          <div class="panel player-turn-panel" id="player-turn-panel">
+            <!-- Tela de Segurança/Esconder Turno (Evitar Peeking) -->
+            <div id="turn-privacy-screen" style="text-align: center; padding: 2rem 0;">
+              <h3 class="text-yellow" style="margin-bottom: 1rem;">Turno de: <span id="privacy-player-name">Jogador</span></h3>
+              <p class="text-muted" style="margin-bottom: 2rem;">Os outros jogadores devem desviar o olhar da tela. Apenas o jogador ativo deve clicar no botão abaixo para ver suas cartas.</p>
+              <button class="btn" id="btn-reveal-my-turn">🔓 Ver Minhas Cartas</button>
+            </div>
+            
+            <!-- Interface das Cartas do Jogador (inicialmente oculta) -->
+            <div id="player-hand-interface" style="display: none;">
+              <div class="player-turn-header">
+                <h3>Vez do Programador: <span id="active-player-name" class="text-green">Jogador</span></h3>
+                <span class="badge" id="player-role-badge">Função Oculta</span>
+              </div>
+              
+              <p class="text-muted" style="font-size: 0.85rem; margin: 1rem 0;">
+                Selecione uma carta da sua mão para jogar na fila de código ou descarte-a.
+              </p>
+              
+              <div class="hand-container" id="player-hand-container">
+                <!-- Cartas do jogador atual -->
+              </div>
+              
+              <div style="margin-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+                <div class="play-controls">
+                  <button class="btn btn-green btn-disabled" id="btn-play-visible">📥 Adicionar Visível</button>
+                  <button class="btn btn-pink btn-disabled" id="btn-play-hidden">👻 Adicionar Oculto (Stealth)</button>
+                  <button class="btn btn-disabled" id="btn-play-action">⚙️ Usar Carta de Ação</button>
+                </div>
+                <button class="btn btn-pink btn-disabled" id="btn-discard">🗑️ Descartar</button>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Botão Geral de Execução/Fim de Programação -->
+          <div style="text-align: right;">
+            <button class="btn btn-green btn-disabled" id="btn-trigger-compile">🚀 Compilar & Executar Robô</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TELA 4: EXECUÇÃO E DEPURADOR ==================== -->
+    <section id="screen-execution" class="screen">
+      <div class="execution-layout">
+        
+        <!-- Área Central do Mapa do Robô e Controles -->
+        <div class="panel map-main-panel">
+          <div style="width: 100%; display: flex; justify-content: space-between; align-items: center;">
+            <h3 class="text-cyan">Execução do Algoritmo: <span id="exec-level-name">Nível 1</span></h3>
+            <span class="badge" id="exec-outcome-badge" style="display: none;">EM EXECUÇÃO</span>
+          </div>
+          
+          <div class="board-grid-wrapper">
+            <!-- Grid Dinâmico do Tabuleiro 2D -->
+            <div id="board-grid" class="board-grid"></div>
+          </div>
+          
+          <!-- Fila sendo executada passo a passo -->
+          <div class="debugger-queue">
+            <h4 class="text-muted" style="margin-bottom: 0.5rem; font-size: 0.85rem;">Fila de Código em Execução (Revelada):</h4>
+            <div class="queue-container" id="exec-queue-container"></div>
+          </div>
+        </div>
+        
+        <!-- Área Lateral: Depurador e Console do Sistema -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          
+          <!-- Controles de Depuração (Debugger) -->
+          <div class="panel debug-controls-panel">
+            <h3 class="text-cyan">Depurador (Debugger)</h3>
+            
+            <div class="debug-buttons">
+              <button class="btn btn-icon" id="btn-debug-prev" title="Reiniciar Simulação">🔄</button>
+              <button class="btn btn-icon btn-green" id="btn-debug-play" title="Iniciar/Pausar Execução">▶</button>
+              <button class="btn btn-icon" id="btn-debug-step" title="Próximo Passo (Step Over)">➡️</button>
+            </div>
+            
+            <div class="slider-container">
+              <label for="debug-speed">Velocidade da Execução:</label>
+              <input type="range" id="debug-speed" min="200" max="1500" step="100" value="800">
+              <div style="display: flex; justify-content: space-between; font-size: 0.75rem;">
+                <span>Rápido</span>
+                <span>Lento</span>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Console do Sistema/Terminal -->
+          <div class="terminal-panel">
+            <div class="terminal-header">
+              <span>SINTAXE CONSOLE v1.0.4</span>
+              <span style="color: var(--neon-green); font-size: 0.65rem;">● ONLINE</span>
+            </div>
+            <div class="terminal-body" id="terminal-body">
+              <!-- Logs do compilador e movimentação -->
+            </div>
+          </div>
+          
+          <!-- Avançar após execução -->
+          <div>
+            <button class="btn btn-green btn-disabled" id="btn-finish-execution" style="width: 100%;">Analisar Bug / Debate ➡️</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TELA 5: DEBATE E VOTAÇÃO ==================== -->
+    <section id="screen-discussion" class="screen">
+      <div class="panel discussion-summary">
+        <div class="discussion-outcome" id="discussion-outcome-text">
+          ALGORITMO EXECUTADO COM SUCESSO
+        </div>
+        
+        <p class="text-muted" style="text-align: center; max-width: 700px; margin: 0 auto;">
+          A simulação terminou. Abaixo está o código completo que foi executado, revelando os autores secretos de cada comando. Analisem a fila, discutam as falhas lógicas e descubram os culpados!
+        </p>
+        
+        <div class="revealed-queue-summary">
+          <h3 class="text-cyan" style="margin-bottom: 1rem;">Código Compilado & Autores dos Blocos</h3>
+          <div class="revealed-queue-list" id="revealed-queue-list">
+            <!-- Cards revelados com cores dos autores -->
+          </div>
+        </div>
+        
+        <div class="lobby-grid" style="margin-top: 1.5rem;">
+          <div class="panel" style="background: rgba(0,0,0,0.3);">
+            <h3 class="text-yellow">Painel de Depuração Analítica</h3>
+            <p class="text-muted" style="font-size: 0.85rem; margin-top: 0.5rem; line-height: 1.4;">
+              - Identifiquem exatamente qual bloco de comando causou o desvio do robô.<br>
+              - Perguntem aos jogadores a intenção por trás de suas inserções.<br>
+              - Depurem o código em equipe: como a lógica mudaria com as instruções corretas?<br>
+              - Sabotadores, usem argumentos técnicos para disfarçar o erro como um "simples bug de digitação"!
+            </p>
+          </div>
+          
+          <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 1.5rem;">
+            <h4 class="text-cyan">Debate Concluído?</h4>
+            <p class="text-muted" style="font-size: 0.85rem; text-align: center;">
+              Após discutirem e depurarem os erros do robô, passem para a próxima rodada de testes.
+            </p>
+            <button class="btn btn-green" id="btn-next-round">Ir para Próximo Setor ➡️</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== TELA 6: FIM DO JOGO ==================== -->
+    <section id="screen-game-over" class="screen">
+      <div class="panel game-over-panel">
+        <h2 class="game-over-title">Simulação Concluída</h2>
+        
+        <div class="discussion-outcome text-green" id="final-winner-text" style="font-size: 2.5rem;">
+          VITÓRIA DOS PROGRAMADORES!
+        </div>
+        
+        <div class="final-scores">
+          <div class="score-card prog">
+            <div>Programadores</div>
+            <div class="score-num" id="final-score-prog">0</div>
+          </div>
+          <div class="score-card sab">
+            <div>Sabotadores</div>
+            <div class="score-num" id="final-score-sab">0</div>
+          </div>
+        </div>
+        
+        <div class="final-roles-list">
+          <h3>Identidades Reveladas</h3>
+          <div id="final-players-roles-container">
+            <!-- JS gera a lista de jogadores e suas funções reais -->
+          </div>
+        </div>
+        
+        <button class="btn" id="btn-restart-game">🔄 Jogar Novamente (Menu Principal)</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== DIÁLOGO / MODAL DE REVELAÇÃO PRIVADA ==================== -->
+  <div class="modal-overlay" id="role-modal">
+    <div class="modal-content">
+      <h3 class="text-yellow">Confirmação de Privacidade</h3>
+      <p class="text-muted" style="margin: 1.5rem 0;" id="role-modal-prompt">
+        Apenas o jogador <strong>Nome</strong> deve olhar para a tela agora.
+      </p>
+      
+      <!-- Bloco de segurança que só revela ao clicar -->
+      <button class="btn" id="btn-modal-reveal">Visualizar Função Secreta</button>
+      
+      <!-- Conteúdo do Cargo Oculto -->
+      <div id="modal-role-content" style="display: none;">
+        <div class="modal-role-box" id="modal-role-box">
+          <h2 id="modal-role-title" style="margin-bottom: 0.5rem;">PROGRAMADOR(A)</h2>
+          <p id="modal-role-desc" style="font-size: 0.9rem; line-height: 1.4; color: var(--text-muted);"></p>
+        </div>
+        <button class="btn btn-green" id="btn-modal-close">Entendido, ocultar papel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts do Jogo -->
+  <script src="js/levels.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>

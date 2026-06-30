@@ -1,0 +1,949 @@
+/* AlgoBot - Sabotagem & Sintaxe */
+/* CSS Principal com Design Cyberpunk, Neon e Glassmorfismo */
+
+/* Importação de Fonte Moderna */
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;700&family=Outfit:wght@400;600;800&display=swap');
+
+:root {
+  /* Variáveis de Cores Neon */
+  --bg-primary: #0a0b10;
+  --bg-secondary: #121420;
+  --bg-panel: rgba(20, 24, 40, 0.7);
+  --border-color: rgba(0, 242, 254, 0.2);
+  --border-glow: rgba(0, 242, 254, 0.4);
+  
+  --text-primary: #f0f3f8;
+  --text-muted: #8c9bb0;
+  
+  --neon-cyan: #00f2fe;
+  --neon-green: #39ff14;
+  --neon-pink: #ff007f;
+  --neon-yellow: #fefe33;
+  --neon-purple: #9d4edd;
+  
+  --glow-cyan: 0 0 10px rgba(0, 242, 254, 0.6);
+  --glow-green: 0 0 10px rgba(57, 255, 20, 0.6);
+  --glow-pink: 0 0 10px rgba(255, 0, 127, 0.6);
+  
+  --font-display: 'Outfit', sans-serif;
+  --font-code: 'Fira Code', monospace;
+  
+  --card-height: 140px;
+  --card-width: 100px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  overflow-x: hidden;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(157, 78, 221, 0.15) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(0, 242, 254, 0.15) 0px, transparent 50%);
+  background-attachment: fixed;
+}
+
+header {
+  padding: 1.5rem;
+  text-align: center;
+  border-bottom: 1px solid var(--border-color);
+  backdrop-filter: blur(10px);
+  z-index: 100;
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo-container h1 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  letter-spacing: 2px;
+  color: var(--text-primary);
+  text-shadow: var(--glow-cyan);
+}
+
+.logo-container span {
+  color: var(--neon-pink);
+  text-shadow: var(--glow-pink);
+}
+
+.header-stats {
+  display: flex;
+  gap: 1.5rem;
+  font-family: var(--font-code);
+  font-size: 0.9rem;
+}
+
+.stat-box {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 0.4rem 0.8rem;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+}
+
+.stat-box.prog { color: var(--neon-green); border-color: rgba(57, 255, 20, 0.3); }
+.stat-box.sab { color: var(--neon-pink); border-color: rgba(255, 0, 127, 0.3); }
+
+/* Containers Principais */
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.screen {
+  display: none;
+  animation: fadeIn 0.4s ease-out forwards;
+  flex-direction: column;
+  gap: 2rem;
+  width: 100%;
+}
+
+.screen.active {
+  display: flex;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Glassmorphism Panel */
+.panel {
+  background: var(--bg-panel);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+  backdrop-filter: blur(8px);
+  position: relative;
+  overflow: hidden;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--neon-cyan), transparent);
+  animation: scanline 4s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Formulários e Botões */
+.btn {
+  background: transparent;
+  color: var(--neon-cyan);
+  border: 2px solid var(--neon-cyan);
+  padding: 0.8rem 1.8rem;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px rgba(0, 242, 254, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn:hover {
+  background: var(--neon-cyan);
+  color: var(--bg-primary);
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0);
+}
+
+.btn-pink {
+  color: var(--neon-pink);
+  border-color: var(--neon-pink);
+  box-shadow: 0 0 5px rgba(255, 0, 127, 0.2);
+}
+
+.btn-pink:hover {
+  background: var(--neon-pink);
+  color: var(--text-primary);
+  box-shadow: var(--glow-pink);
+}
+
+.btn-green {
+  color: var(--neon-green);
+  border-color: var(--neon-green);
+  box-shadow: 0 0 5px rgba(57, 255, 20, 0.2);
+}
+
+.btn-green:hover {
+  background: var(--neon-green);
+  color: var(--bg-primary);
+  box-shadow: var(--glow-green);
+}
+
+.btn-disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+input[type="text"] {
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.8rem 1rem;
+  border-radius: 6px;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  width: 100%;
+  transition: all 0.3s ease;
+}
+
+input[type="text"]:focus {
+  border-color: var(--neon-cyan);
+  outline: none;
+  box-shadow: var(--glow-cyan);
+}
+
+/* ==================== TELA LOBBY ==================== */
+.lobby-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+@media (max-width: 768px) {
+  .lobby-grid { grid-template-columns: 1fr; }
+}
+
+.lobby-title {
+  font-size: 3rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 2rem;
+  line-height: 1.1;
+  background: linear-gradient(135deg, var(--neon-cyan), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 2px 10px rgba(0, 242, 254, 0.2));
+}
+
+.lobby-subtitle {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.player-input-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.player-input-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.btn-remove-player {
+  background: transparent;
+  color: var(--neon-pink);
+  border: 1px solid var(--neon-pink);
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-remove-player:hover {
+  background: var(--neon-pink);
+  color: var(--text-primary);
+}
+
+.lobby-instructions h3 {
+  color: var(--neon-cyan);
+  margin-bottom: 1rem;
+}
+
+.lobby-instructions ul {
+  list-style: none;
+}
+
+.lobby-instructions li {
+  margin-bottom: 0.8rem;
+  padding-left: 1.5rem;
+  position: relative;
+  color: var(--text-muted);
+}
+
+.lobby-instructions li::before {
+  content: '▶';
+  position: absolute;
+  left: 0;
+  color: var(--neon-pink);
+  font-size: 0.8rem;
+  top: 4px;
+}
+
+/* ==================== REVELAÇÃO DE CARGOS ==================== */
+.role-reveal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.role-reveal-card {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.role-reveal-card:hover {
+  border-color: var(--neon-cyan);
+  background: rgba(0, 242, 254, 0.05);
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.1);
+}
+
+.role-reveal-card.checked {
+  border-color: var(--neon-green);
+  background: rgba(57, 255, 20, 0.05);
+}
+
+.role-name-display {
+  font-weight: 700;
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Modal/Overlay de Revelação */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(4, 5, 8, 0.9);
+  backdrop-filter: blur(8px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1.5rem;
+}
+
+.modal-overlay.active {
+  display: flex;
+}
+
+.modal-content {
+  background: var(--bg-secondary);
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: 2.5rem;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(0, 242, 254, 0.2);
+  animation: modalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes modalPop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+.modal-role-box {
+  background: rgba(0,0,0,0.5);
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin: 1.5rem 0;
+  border: 1px solid transparent;
+}
+
+/* ==================== TELA DE JOGO (PLAYING) ==================== */
+.playing-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .playing-layout { grid-template-columns: 1fr; }
+}
+
+.level-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mini-map-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.queue-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.queue-container {
+  background: rgba(0,0,0,0.4);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  min-height: 170px;
+  display: flex;
+  gap: 0.8rem;
+  overflow-x: auto;
+  align-items: center;
+  position: relative;
+}
+
+.queue-container:empty::before {
+  content: 'Fila de Execução Vazia. Adicione comandos...';
+  color: var(--text-muted);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: var(--font-code);
+  font-size: 0.9rem;
+  pointer-events: none;
+  width: 80%;
+  text-align: center;
+}
+
+/* Cartas na Fila */
+.queue-card {
+  width: var(--card-width);
+  height: var(--card-height);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 6px;
+  padding: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  flex-shrink: 0;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.queue-card.hidden-card {
+  background: repeating-linear-gradient(45deg, #121420, #121420 10px, #181d30 10px, #181d30 20px);
+  border-color: var(--neon-purple);
+  box-shadow: inset 0 0 10px rgba(157, 78, 221, 0.2);
+}
+
+.queue-card.hidden-card::after {
+  content: '🔒';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.8rem;
+}
+
+.queue-card.action-target-mode {
+  animation: cardPulse 1s infinite alternate;
+  border-color: var(--neon-yellow);
+}
+
+@keyframes cardPulse {
+  from { box-shadow: 0 0 4px rgba(254, 254, 51, 0.4); border-color: rgba(254, 254, 51, 0.4); }
+  to { box-shadow: 0 0 12px rgba(254, 254, 51, 0.8); border-color: rgba(254, 254, 51, 1); }
+}
+
+.queue-card .card-owner {
+  font-size: 0.7rem;
+  color: var(--neon-cyan);
+  text-transform: uppercase;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.queue-card .card-name {
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.queue-card .card-icon {
+  font-size: 1.8rem;
+  text-align: center;
+}
+
+/* Painel do Turno do Jogador Ativo */
+.player-turn-panel {
+  border-color: var(--neon-cyan);
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.player-turn-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 0.8rem;
+}
+
+.player-turn-header h3 {
+  color: var(--neon-cyan);
+  font-size: 1.3rem;
+}
+
+.hand-container {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  padding: 0.5rem 0;
+  align-items: center;
+}
+
+.game-card {
+  width: var(--card-width);
+  height: var(--card-height);
+  border: 1px solid var(--border-color);
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.game-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--neon-cyan);
+  box-shadow: 0 5px 15px rgba(0, 242, 254, 0.3);
+}
+
+.game-card.selected {
+  transform: translateY(-12px);
+  border-color: var(--neon-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+.game-card.action-card {
+  border-color: var(--neon-yellow);
+}
+
+.game-card.action-card:hover {
+  box-shadow: 0 5px 15px rgba(254, 254, 51, 0.3);
+  border-color: var(--neon-yellow);
+}
+
+.game-card.action-card.selected {
+  box-shadow: 0 0 10px rgba(254, 254, 51, 0.6);
+  border-color: var(--neon-yellow);
+}
+
+.game-card .card-desc {
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+/* Controles de Jogada */
+.play-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* ==================== TELA DE EXECUÇÃO / DEPURADOR ==================== */
+.execution-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 1.5rem;
+}
+
+@media (max-width: 900px) {
+  .execution-layout { grid-template-columns: 1fr; }
+}
+
+.map-main-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+/* GRID DO TABULEIRO */
+.board-grid-wrapper {
+  background: #06070a;
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: inset 0 0 20px rgba(0, 242, 254, 0.1);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 350px;
+}
+
+.board-grid {
+  display: grid;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.grid-cell {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  background: rgba(20, 24, 40, 0.6);
+  border: 1px solid rgba(0, 242, 254, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  position: relative;
+  transition: all 0.3s;
+}
+
+.grid-cell.cell-wall {
+  background: #2a3142;
+  border-color: #3b455c;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+}
+
+.grid-cell.cell-start {
+  background: rgba(0, 242, 254, 0.05);
+  border: 1px dashed var(--neon-cyan);
+}
+
+.grid-cell.cell-start::before {
+  content: 'S';
+  font-size: 0.6rem;
+  color: var(--neon-cyan);
+  position: absolute;
+  top: 2px;
+  left: 3px;
+  font-family: var(--font-code);
+}
+
+.grid-cell.cell-goal {
+  background: rgba(57, 255, 20, 0.05);
+  border: 1px dashed var(--neon-green);
+  animation: goalPulse 1.5s infinite alternate;
+}
+
+@keyframes goalPulse {
+  from { box-shadow: inset 0 0 2px rgba(57, 255, 20, 0.2); }
+  to { box-shadow: inset 0 0 10px rgba(57, 255, 20, 0.6); }
+}
+
+.grid-cell.cell-trap {
+  background: rgba(255, 0, 127, 0.05);
+  border: 1px dashed var(--neon-pink);
+}
+
+.grid-cell.cell-trap::before {
+  content: 'LASER';
+  font-size: 0.5rem;
+  color: var(--neon-pink);
+  position: absolute;
+  bottom: 2px;
+  width: 100%;
+  text-align: center;
+  font-family: var(--font-code);
+}
+
+/* ROBÔ */
+.robot-sprite {
+  font-size: 2.2rem;
+  z-index: 10;
+  transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  text-shadow: var(--glow-cyan);
+  transform-origin: center;
+}
+
+.robot-sprite.dir-UP { transform: rotate(0deg); }
+.robot-sprite.dir-RIGHT { transform: rotate(90deg); }
+.robot-sprite.dir-DOWN { transform: rotate(180deg); }
+.robot-sprite.dir-LEFT { transform: rotate(270deg); }
+
+/* Fila de Execução no Depurador */
+.debugger-queue {
+  width: 100%;
+}
+
+.debugger-queue .queue-card.active-execution {
+  border-color: var(--neon-green);
+  box-shadow: var(--glow-green);
+  transform: translateY(-5px);
+}
+
+/* Painel de Depuração / Controles */
+.debug-controls-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.debug-buttons {
+  display: flex;
+  gap: 0.8rem;
+  justify-content: center;
+}
+
+.btn-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+}
+
+.slider-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.slider-container input[type="range"] {
+  accent-color: var(--neon-cyan);
+  cursor: pointer;
+}
+
+/* Terminal de Console */
+.terminal-panel {
+  background: #05060a;
+  border: 1px solid #1f2438;
+  font-family: var(--font-code);
+  font-size: 0.8rem;
+  border-radius: 8px;
+  height: 250px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.terminal-header {
+  background: #0d0f1a;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  border-bottom: 1px solid #1f2438;
+  color: var(--neon-cyan);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.terminal-body {
+  padding: 1rem;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.terminal-line {
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.terminal-line.info { color: var(--text-muted); }
+.terminal-line.success { color: var(--neon-green); text-shadow: 0 0 5px rgba(57, 255, 20, 0.2); }
+.terminal-line.error { color: var(--neon-pink); text-shadow: 0 0 5px rgba(255, 0, 127, 0.2); }
+.terminal-line.sys { color: var(--neon-cyan); }
+
+/* ==================== TELA DISCUSSÃO & VOTAÇÃO ==================== */
+.discussion-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.discussion-outcome {
+  text-align: center;
+  font-size: 2rem;
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.discussion-outcome.success {
+  color: var(--neon-green);
+  text-shadow: var(--glow-green);
+}
+
+.discussion-outcome.failure {
+  color: var(--neon-pink);
+  text-shadow: var(--glow-pink);
+}
+
+.revealed-queue-summary {
+  background: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  padding: 1.5rem;
+  border: 1px solid var(--border-color);
+}
+
+.revealed-queue-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.revealed-queue-item {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  padding: 0.8rem;
+  border-radius: 6px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.revealed-queue-item.by-programmer {
+  border-color: rgba(57, 255, 20, 0.4);
+}
+
+.revealed-queue-item.by-saboteur {
+  border-color: rgba(255, 0, 127, 0.4);
+}
+
+.revealed-queue-item .item-owner {
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* ==================== FIM DE JOGO ==================== */
+.game-over-panel {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  align-items: center;
+}
+
+.game-over-title {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: var(--neon-purple);
+  text-shadow: 0 0 15px rgba(157, 78, 221, 0.6);
+}
+
+.final-scores {
+  display: flex;
+  gap: 3rem;
+  justify-content: center;
+  margin: 1rem 0;
+}
+
+.score-card {
+  background: rgba(0,0,0,0.5);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1.5rem;
+  min-width: 150px;
+}
+
+.score-card.prog { border-color: var(--neon-green); }
+.score-card.sab { border-color: var(--neon-pink); }
+
+.score-card .score-num {
+  font-size: 3rem;
+  font-weight: 800;
+  font-family: var(--font-code);
+  margin-top: 0.5rem;
+}
+
+.final-roles-list {
+  width: 100%;
+  max-width: 600px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 8px;
+  padding: 1.5rem;
+  text-align: left;
+}
+
+.final-roles-list h3 {
+  margin-bottom: 1rem;
+  text-align: center;
+  color: var(--neon-cyan);
+}
+
+.final-role-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.final-role-item:last-child {
+  border-bottom: none;
+}
+
+.badge {
+  padding: 0.2rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.badge-prog { background: rgba(57, 255, 20, 0.2); color: var(--neon-green); border: 1px solid var(--neon-green); }
+.badge-sab { background: rgba(255, 0, 127, 0.2); color: var(--neon-pink); border: 1px solid var(--neon-pink); }
+
+/* Utilitários */
+.text-cyan { color: var(--neon-cyan); }
+.text-green { color: var(--neon-green); }
+.text-pink { color: var(--neon-pink); }
+.text-yellow { color: var(--neon-yellow); }
