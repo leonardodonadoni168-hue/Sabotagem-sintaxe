@@ -473,6 +473,14 @@ function selectHandCard(idx, cardEl) {
   selectedHandCardIdx = idx;
   cardEl.classList.add("selected");
   
+  const activePlayer = gameState.players[gameState.activePlayerIndex];
+  const card = activePlayer.hand[idx];
+  if (card && card.type === "action") {
+    activeSkillMode = "ACTION_TARGET";
+    alert("Selecione um bloco no Algoritmo Principal acima para aplicar a carta de ação.");
+    renderCommandQueue();
+  }
+  
   updatePlayControls();
 }
 
@@ -675,14 +683,6 @@ function triggerSkillTargetSelect(clickedId) {
   }
 }
 
-// Clicou para jogar carta de ação do baralho
-elements.btnPlayAction.addEventListener("click", () => {
-  if (selectedHandCardIdx === null) return;
-  activeSkillMode = "ACTION_TARGET";
-  alert("Selecione um bloco no Algoritmo Principal acima para aplicar a carta de ação.");
-  renderCommandQueue();
-});
-
 function refreshAfterPlay() {
   const currentLevel = LEVELS[gameState.currentLevelIndex];
   if (gameState.commandQueue.length >= currentLevel.maxInstructions) {
@@ -732,6 +732,11 @@ function startExecutionPhase() {
   
   renderSimulationStep();
   showScreen(elements.screenExecution);
+  
+  // Auto-play simulation immediately after screen transition
+  setTimeout(() => {
+    elements.btnDebugPlay.click();
+  }, 100);
 }
 
 function logTerminal(msg, type = "info") {
