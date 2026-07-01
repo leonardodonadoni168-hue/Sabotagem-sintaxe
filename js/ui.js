@@ -14,8 +14,7 @@ let skillTargetId1 = null; // Armazena primeiro alvo do swap da IA Corrompida
 const elements = {
   headerStats: document.getElementById("header-stats"),
   infoRound: document.getElementById("info-round"),
-  scoreProg: document.getElementById("score-prog"),
-  scoreSab: document.getElementById("score-sab"),
+  individualScoresContainer: document.getElementById("individual-scores-container"),
   
   // Telas
   screenLobby: document.getElementById("screen-lobby"),
@@ -49,7 +48,6 @@ const elements = {
   currentLevelDesc: document.getElementById("current-level-desc"),
   playingMiniMap: document.getElementById("playing-mini-map"),
   playingQueueContainer: document.getElementById("playing-queue-container"),
-  playingFuncContainer: document.getElementById("playing-func-container"),
   queueSize: document.getElementById("queue-size"),
   queueMax: document.getElementById("queue-max"),
   
@@ -65,7 +63,6 @@ const elements = {
   playerHandContainer: document.getElementById("player-hand-container"),
   
   btnPlayVisible: document.getElementById("btn-play-visible"),
-  btnPlayFunc: document.getElementById("btn-play-func"),
   btnPlayHidden: document.getElementById("btn-play-hidden"),
   btnDiscard: document.getElementById("btn-discard"),
   btnTriggerCompile: document.getElementById("btn-trigger-compile"),
@@ -75,7 +72,6 @@ const elements = {
   execOutcomeBadge: document.getElementById("exec-outcome-badge"),
   boardGrid: document.getElementById("board-grid"),
   execQueueContainer: document.getElementById("exec-queue-container"),
-  execFuncContainer: document.getElementById("exec-func-container"),
   btnDebugPrev: document.getElementById("btn-debug-prev"),
   btnDebugPlay: document.getElementById("btn-debug-play"),
   btnDebugStep: document.getElementById("btn-debug-step"),
@@ -91,8 +87,7 @@ const elements = {
   
   // Game Over
   finalWinnerText: document.getElementById("final-winner-text"),
-  finalScoreProg: document.getElementById("final-score-prog"),
-  finalScoreSab: document.getElementById("final-score-sab"),
+  finalScoresLeaderboard: document.getElementById("final-scores-leaderboard"),
   finalPlayersRolesContainer: document.getElementById("final-players-roles-container"),
   btnRestartGame: document.getElementById("btn-restart-game")
 };
@@ -119,8 +114,14 @@ function showScreen(screen) {
 
 function updateHeaderStats() {
   elements.infoRound.innerText = `Setor: ${gameState.currentRound}/${LEVELS.length}`;
-  elements.scoreProg.innerText = `Programadores: ${gameState.scores.programmers}`;
-  elements.scoreSab.innerText = `Sabotadores: ${gameState.scores.saboteurs}`;
+  elements.individualScoresContainer.innerHTML = "";
+  gameState.players.forEach(player => {
+    const box = document.createElement("div");
+    box.className = "stat-box";
+    box.style.fontSize = "0.75rem";
+    box.innerHTML = `${player.name}: <span style="font-weight:bold; color: var(--neon-cyan);">${player.score || 0}</span> pts`;
+    elements.individualScoresContainer.appendChild(box);
+  });
 }
 
 // --- TELA 1: LOBBY ---
@@ -302,7 +303,6 @@ function renderMiniMap(level) {
 
 function renderCommandQueue() {
   renderQueueTrack(gameState.commandQueue, elements.playingQueueContainer, false);
-  renderQueueTrack(gameState.functionQueue, elements.playingFuncContainer, true);
   
   elements.queueSize.innerText = gameState.commandQueue.length;
   
@@ -323,7 +323,6 @@ function renderCommandQueue() {
   // Regra de limite de capacidade
   if (gameState.commandQueue.length >= currentLevel.maxInstructions) {
     elements.btnPlayVisible.classList.add("btn-disabled");
-    elements.btnPlayFunc.classList.add("btn-disabled");
     elements.btnPlayHidden.classList.add("btn-disabled");
     elements.btnDiscard.classList.add("btn-disabled");
   }
@@ -500,10 +499,8 @@ function updatePlayControls() {
   const activePlayer = gameState.players[gameState.activePlayerIndex];
   const currentLevel = LEVELS[gameState.currentLevelIndex];
   
-
   if (gameState.commandQueue.length >= currentLevel.maxInstructions) {
     elements.btnPlayVisible.classList.add("btn-disabled");
-    elements.btnPlayFunc.classList.add("btn-disabled");
     elements.btnPlayHidden.classList.add("btn-disabled");
     elements.btnDiscard.classList.add("btn-disabled");
     return;
@@ -511,7 +508,6 @@ function updatePlayControls() {
   
   if (selectedHandCardIdx === null) {
     elements.btnPlayVisible.classList.add("btn-disabled");
-    elements.btnPlayFunc.classList.add("btn-disabled");
     elements.btnPlayHidden.classList.add("btn-disabled");
     elements.btnDiscard.classList.add("btn-disabled");
     return;
@@ -528,22 +524,10 @@ function updatePlayControls() {
     } else {
       elements.btnPlayHidden.classList.remove("btn-disabled");
     }
-    
-    // Só permite adicionar na função se o nível tiver a sub-rotina habilitada
-    const hasFunc = currentLevel.allowedBlocks.includes("call_func");
-    if (hasFunc) {
-      elements.btnPlayFunc.classList.remove("btn-disabled");
-    } else {
-      elements.btnPlayFunc.classList.add("btn-disabled");
-    }
   } else if (card.type === "action") {
     elements.btnPlayVisible.classList.add("btn-disabled");
     elements.btnPlayHidden.classList.add("btn-disabled");
-    elements.btnPlayFunc.classList.add("btn-disabled");
   }
-}
-
-// BOTOES DE ROTINA
 elements.btnPlayVisible.addEventListener("click", () => {
   if (selectedHandCardIdx === null) return;
   playCommandCard(gameState.activePlayerIndex, selectedHandCardIdx, false);
@@ -553,27 +537,6 @@ elements.btnPlayVisible.addEventListener("click", () => {
 elements.btnPlayHidden.addEventListener("click", () => {
   if (selectedHandCardIdx === null) return;
   playCommandCard(gameState.activePlayerIndex, selectedHandCardIdx, true);
-  refreshAfterPlay();
-});
-
-elements.btnPlayFunc.addEventListener("click", () => {
-  if (selectedHandCardIdx === null) return;
-  const activePlayer = gameState.players[gameState.activePlayerIndex];
-  const card = activePlayer.hand[selectedHandCardIdx];
-  
-  // Insere na fila de função
-  activePlayer.hand.splice(selectedHandCardIdx, 1);
-  gameState.functionQueue.push({
-    id: generateId(),
-    card: card,
-    ownerName: activePlayer.name,
-    ownerId: activePlayer.id,
-    isHidden: false,
-    revealed: true
-  });
-  
-  logAction(`${activePlayer.name} adicionou o comando "${card.name}" na Sub-rotina (Função).`);
-  endTurn();
   refreshAfterPlay();
 });
 
@@ -1102,22 +1065,42 @@ function generatePedagogicalReport() {
 // --- TELA 6: GAME OVER ---
 
 function renderGameOverScreen() {
-  const progWins = gameState.scores.programmers > gameState.scores.saboteurs;
-  const isDraw = gameState.scores.programmers === gameState.scores.saboteurs;
+  const maxScore = Math.max(...gameState.players.map(p => p.score || 0));
+  const winners = gameState.players.filter(p => p.score === maxScore);
   
-  if (isDraw) {
-    elements.finalWinnerText.innerText = "EMPATE NO CONTROLE DO CORE!";
+  if (winners.length === gameState.players.length) {
+    elements.finalWinnerText.innerText = "EMPATE GERAL NO CONTROLE DO CORE!";
     elements.finalWinnerText.className = "discussion-outcome text-yellow";
-  } else if (progWins) {
-    elements.finalWinnerText.innerText = "VITÓRIA DOS PROGRAMADORES! HELENA DESATIVADA.";
+  } else if (winners.length > 1) {
+    elements.finalWinnerText.innerText = `EMPATE! ${winners.map(w => w.name).join(" & ")} VENCERAM A SIMULAÇÃO COM ${maxScore} PTS! 🏆`;
     elements.finalWinnerText.className = "discussion-outcome text-green";
   } else {
-    elements.finalWinnerText.innerText = "VITÓRIA DOS SABOTADORES! HELENA CONTROLOU O DATA CENTER.";
-    elements.finalWinnerText.className = "discussion-outcome text-pink";
+    elements.finalWinnerText.innerText = `VITÓRIA INDIVIDUAL: ${winners[0].name} VENCEU COM ${maxScore} PTS! 🏆`;
+    elements.finalWinnerText.className = "discussion-outcome text-green";
   }
   
-  elements.finalScoreProg.innerText = gameState.scores.programmers;
-  elements.finalScoreSab.innerText = gameState.scores.saboteurs;
+  // Renderiza leaderboard
+  elements.finalScoresLeaderboard.innerHTML = "";
+  const sortedPlayers = [...gameState.players].sort((a, b) => (b.score || 0) - (a.score || 0));
+  sortedPlayers.forEach((player, idx) => {
+    const row = document.createElement("div");
+    row.className = `score-card ${idx === 0 ? 'prog' : 'sab'}`;
+    row.style.width = "100%";
+    row.style.display = "flex";
+    row.style.justifyContent = "space-between";
+    row.style.alignItems = "center";
+    row.style.padding = "0.8rem 1.2rem";
+    row.style.margin = "0.3rem 0";
+    row.style.border = "1px solid var(--border-color)";
+    row.style.borderRadius = "8px";
+    row.style.background = "rgba(0,0,0,0.2)";
+    
+    row.innerHTML = `
+      <div><strong>#${idx + 1}</strong> ${player.name}</div>
+      <div class="score-num" style="font-size: 1.2rem; font-family: var(--font-code); color: var(--neon-cyan);">${player.score || 0} pts</div>
+    `;
+    elements.finalScoresLeaderboard.appendChild(row);
+  });
   
   elements.finalPlayersRolesContainer.innerHTML = "";
   gameState.players.forEach(player => {

@@ -123,7 +123,7 @@ const LEVELS = [
     startDir: "RIGHT",
     minInstructions: 4,
     maxInstructions: 25,
-    allowedBlocks: ["forward", "left", "right", "call_func", "loop_2"],
+    allowedBlocks: ["forward", "left", "right", "loop_2"],
     instructionText: "Foco: Reutilização de código. Chame a sub-rotina repetidas vezes para navegar."
   },
   {

@@ -14,8 +14,7 @@
     </div>
     <div class="header-stats" id="header-stats" style="display: none;">
       <div class="stat-box" id="info-round">Setor: 1/8</div>
-      <div class="stat-box prog" id="score-prog">Programadores: 0</div>
-      <div class="stat-box sab" id="score-sab">Sabotadores: 0</div>
+      <div id="individual-scores-container" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
     </div>
   </header>
 
@@ -105,10 +104,6 @@
             </div>
             <div class="queue-container" id="playing-queue-container"></div>
             
-            <div class="queue-track-label func" style="margin-top: 0.5rem;">
-              📦 Sub-rotina Modular (Fila de Função)
-            </div>
-            <div class="queue-container func-track" id="playing-func-container"></div>
           </div>
           
           <!-- Turno do Jogador Ativo -->
@@ -141,7 +136,6 @@
               <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
                 <div class="play-controls">
                   <button class="btn btn-green btn-disabled" id="btn-play-visible">📥 Inserir Visível (Fila Principal)</button>
-                  <button class="btn btn-purple btn-disabled" id="btn-play-func">📥 Inserir na Função</button>
                   <button class="btn btn-pink btn-disabled" id="btn-play-hidden">👻 Inserir Oculto (Stealth)</button>
                 </div>
                 <button class="btn btn-pink btn-disabled" id="btn-discard">🗑️ Descartar</button>
@@ -177,9 +171,6 @@
           <div class="debugger-queue">
             <h4 class="text-muted" style="margin-bottom: 0.3rem; font-size: 0.8rem;">Algoritmo Principal:</h4>
             <div class="queue-container" id="exec-queue-container"></div>
-            
-            <h4 class="text-muted" style="margin: 0.5rem 0 0.3rem 0; font-size: 0.8rem;">Sub-rotina (Função):</h4>
-            <div class="queue-container func-track" id="exec-func-container"></div>
           </div>
         </div>
         
@@ -272,15 +263,8 @@
           VITÓRIA DOS PROGRAMADORES!
         </div>
         
-        <div class="final-scores">
-          <div class="score-card prog">
-            <div>Programadores</div>
-            <div class="score-num" id="final-score-prog">0</div>
-          </div>
-          <div class="score-card sab">
-            <div>Sabotadores</div>
-            <div class="score-num" id="final-score-sab">0</div>
-          </div>
+        <div class="final-scores" id="final-scores-leaderboard" style="display: flex; flex-direction: column; gap: 0.5rem; width: 100%; max-width: 400px; margin: 1rem auto;">
+          <!-- Rank list dynamically generated -->
         </div>
         
         <div class="final-roles-list">

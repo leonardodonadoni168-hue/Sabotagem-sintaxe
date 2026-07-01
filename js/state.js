@@ -56,7 +56,6 @@ const CARD_TYPES = {
   LOOP_4: { id: "loop_4", name: "Loop For 4x", type: "command", desc: "Repete a instrução seguinte 4 vezes", icon: "🔁x4" },
   LOOP_6: { id: "loop_6", name: "Loop For 6x", type: "command", desc: "Repete a instrução seguinte 6 vezes", icon: "🔁x6" },
   IF_CLEAR: { id: "if_clear_forward", name: "Se Frente Livre", type: "command", desc: "Executa a instrução seguinte apenas se a frente estiver limpa", icon: "❓" },
-  CALL_FUNC: { id: "call_func", name: "Chamar Função", type: "command", desc: "Executa a sub-rotina modular pré-definida", icon: "📦" },
   
   // Cartas de Ações Especiais (Mesa)
   REVEAL: { id: "reveal_card", name: "Scanner de Bloco", type: "action", desc: "Revela publicamente um bloco oculto na fila", icon: "👁️" },
@@ -77,7 +76,6 @@ const BASE_DECK = [
   ...Array(3).fill("LOOP_4"),
   ...Array(2).fill("LOOP_6"),
   ...Array(6).fill("IF_CLEAR"),
-  ...Array(4).fill("CALL_FUNC"),
   ...Array(3).fill("REVEAL"),
   ...Array(4).fill("DELETE"),
   ...Array(3).fill("INVERT")
@@ -91,7 +89,6 @@ const gameState = {
   currentRound: 1,
   activePlayerIndex: 0,
   phase: "LOBBY", // LOBBY, ROLE_REVEAL, PLAYING, EXECUTION, DISCUSSION, GAME_OVER
-  scores: { programmers: 0, saboteurs: 0 },
   actionLog: [],
   roundWinner: null
 };
@@ -119,12 +116,12 @@ function setupGame(names) {
     role: null,
     hand: [],
     skillUsed: false, // Controla uso de habilidade por rodada
-    hiddenCardsPlayed: 0 // Quantidade de cartas ocultas jogadas na rodada
+    hiddenCardsPlayed: 0, // Quantidade de cartas ocultas jogadas na rodada
+    score: 0 // Pontuação individual
   }));
   
   gameState.currentLevelIndex = 0;
   gameState.currentRound = 1;
-  gameState.scores = { programmers: 0, saboteurs: 0 };
   
   startRound();
 }
@@ -395,12 +392,23 @@ function useClassSkill(playerIndex, skillData) {
 
 function declareRoundWinner(winnerGroup) {
   gameState.roundWinner = winnerGroup;
+  
   if (winnerGroup === "PROGRAMMERS") {
-    gameState.scores.programmers++;
     logAction("Terminal de Fuga Desbloqueado! Ponto para os Programadores.");
+    gameState.players.forEach(player => {
+      const isProg = player.role === "PROGRAMMER" || player.role === "DEBUGGER" || player.role === "ANALYST";
+      if (isProg) {
+        player.score = (player.score || 0) + 1;
+      }
+    });
   } else {
-    gameState.scores.saboteurs++;
     logAction("Conexão corrompida. Ponto para a IA HELENA / Sabotadores.");
+    gameState.players.forEach(player => {
+      const isSab = player.role === "CORRUPTED_AI" || player.role === "HACKER";
+      if (isSab) {
+        player.score = (player.score || 0) + 1;
+      }
+    });
   }
   gameState.phase = "DISCUSSION";
 }
