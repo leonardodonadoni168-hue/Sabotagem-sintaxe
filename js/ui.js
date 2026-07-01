@@ -318,7 +318,6 @@ function renderCommandQueue() {
   }
   
   // Regra de limite de capacidade
-  const currentLevel = LEVELS[gameState.currentLevelIndex];
   if (gameState.commandQueue.length >= currentLevel.maxInstructions) {
     elements.btnPlayVisible.classList.add("btn-disabled");
     elements.btnPlayFunc.classList.add("btn-disabled");
