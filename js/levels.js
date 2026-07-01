@@ -9,6 +9,7 @@ const LEVELS = [
     grid: [
       ['#', '#', '#', '#', '#', '#', '#', '#'],
       ['#', 'S', '.', '.', '.', '.', 'G', '#'],
+      ['#', '.', '.', '.', '.', '.', '.', '#'],
       ['#', '#', '#', '#', '#', '#', '#', '#']
     ],
     startPos: { r: 1, c: 1 },
@@ -16,7 +17,7 @@ const LEVELS = [
     minInstructions: 5,
     maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right"],
-    instructionText: "Foco: Sequenciamento básico linear. Mova-se até a saída."
+    instructionText: "Foco: Sequenciamento básico linear. Mova-se até a saída. Se bater nas bordas, o robô permanece no lugar!"
   },
   {
     id: 2,
@@ -25,8 +26,8 @@ const LEVELS = [
     grid: [
       ['#', '#', '#', '#', '#', '#', '#'],
       ['#', 'S', '.', '#', '.', 'G', '#'],
-      ['#', '#', '.', '#', '.', '#', '#'],
-      ['#', '#', '.', '.', '.', '#', '#'],
+      ['#', '.', '.', '.', '.', '.', '#'],
+      ['#', '.', '.', '.', '.', '.', '#'],
       ['#', '#', '#', '#', '#', '#', '#']
     ],
     startPos: { r: 1, c: 1 },
@@ -34,7 +35,7 @@ const LEVELS = [
     minInstructions: 6,
     maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right"],
-    instructionText: "Foco: Decomposição de caminhos. Mova-se contornando o processador de dados."
+    instructionText: "Foco: Decomposição de caminhos. Contorne o processador central por cima ou por baixo."
   },
   {
     id: 3,
@@ -43,8 +44,8 @@ const LEVELS = [
     grid: [
       ['#', '#', '#', '#', '#', '#', '#'],
       ['#', 'S', '.', 'D', 'G', '#', '#'],
-      ['#', '#', '.', '#', '#', '#', '#'],
-      ['#', 'K', '.', '#', '#', '#', '#'],
+      ['#', '.', '.', '.', '.', '.', '#'],
+      ['#', 'K', '.', '#', '#', '.', '#'],
       ['#', '#', '#', '#', '#', '#', '#']
     ],
     startPos: { r: 1, c: 1 },
@@ -52,7 +53,7 @@ const LEVELS = [
     minInstructions: 6,
     maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "collect_key", "open_door"],
-    instructionText: "Foco: Gerenciamento de estado. Desça para coletar a chave (K) e abra a porta (D)."
+    instructionText: "Foco: Gerenciamento de estado. Colete a chave (K) e abra a porta (D) para acessar G."
   },
   {
     id: 4,
@@ -61,6 +62,7 @@ const LEVELS = [
     grid: [
       ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#'],
       ['#', 'S', '.', '.', '.', '.', '.', '.', 'G', '#'],
+      ['#', '.', '.', '.', '.', '.', '.', '.', '.', '#'],
       ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#']
     ],
     startPos: { r: 1, c: 1 },
@@ -68,7 +70,7 @@ const LEVELS = [
     minInstructions: 2,
     maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "loop_2", "loop_3", "loop_4", "loop_6"],
-    instructionText: "Foco: Repetição em loops. Repita o avanço para economizar blocos."
+    instructionText: "Foco: Repetição em loops. Poupe blocos executando um loop para avançar."
   },
   {
     id: 5,
@@ -77,7 +79,7 @@ const LEVELS = [
     grid: [
       ['#', '#', '#', '#', '#', '#', '#', '#'],
       ['#', 'S', '.', 'T', '.', '.', 'G', '#'],
-      ['#', '#', '.', '#', '#', '#', '#', '#'],
+      ['#', '.', '.', '.', '.', '.', '.', '#'],
       ['#', 'B', '.', '#', '#', '#', '#', '#'],
       ['#', '#', '#', '#', '#', '#', '#', '#']
     ],
@@ -86,7 +88,7 @@ const LEVELS = [
     minInstructions: 8,
     maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "switch_laser"],
-    instructionText: "Foco: Interruptor de evento. Fique sobre B e desligue o laser antes de cruzar T."
+    instructionText: "Foco: Interruptor de evento. Fique sobre B e desarme o laser antes de passar por T."
   },
   {
     id: 6,
@@ -94,9 +96,9 @@ const LEVELS = [
     description: "Conceito: Desvio Condicional (IF). O labirinto possui portas automáticas. Use o comando 'Se Frente Livre' (IF) para decidir se deve seguir em frente ou fazer o desvio.",
     grid: [
       ['#', '#', '#', '#', '#', '#'],
-      ['#', 'S', '.', '.', '#', '#'],
-      ['#', '#', '#', '.', '#', '#'],
-      ['#', 'G', '.', '.', '#', '#'],
+      ['#', 'S', '.', '.', '.', '#'],
+      ['#', '.', '#', '.', '.', '#'],
+      ['#', 'G', '.', '.', '.', '#'],
       ['#', '#', '#', '#', '#', '#']
     ],
     startPos: { r: 1, c: 1 },
@@ -104,7 +106,7 @@ const LEVELS = [
     minInstructions: 4,
     maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "if_clear_forward"],
-    instructionText: "Foco: Estruturas condicionais. Use o sensor IF para escolher o caminho dinamicamente."
+    instructionText: "Foco: Estruturas condicionais. Use IF para testar o caminho em tempo real."
   },
   {
     id: 7,
@@ -112,9 +114,9 @@ const LEVELS = [
     description: "Conceito: Modularização (Sub-rotinas/Funções). Uma sequência idêntica de curvas é necessária para subir as escadas do barramento de dados. Use cartões de Função para reduzir a complexidade.",
     grid: [
       ['#', '#', '#', '#', '#', '#', '#', '#'],
-      ['#', '#', '#', '#', '.', '.', 'G', '#'],
-      ['#', '#', '.', '.', '.', '#', '#', '#'],
-      ['#', 'S', '.', '#', '#', '#', '#', '#'],
+      ['#', '.', '.', '.', '.', '.', 'G', '#'],
+      ['#', '.', '.', '.', '.', '.', '.', '#'],
+      ['#', 'S', '.', '.', '.', '.', '.', '#'],
       ['#', '#', '#', '#', '#', '#', '#', '#']
     ],
     startPos: { r: 3, c: 1 },
@@ -122,7 +124,7 @@ const LEVELS = [
     minInstructions: 4,
     maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "call_func", "loop_2"],
-    instructionText: "Foco: Reutilização de código. Crie uma sub-rotina de curva e chame-a repetidamente."
+    instructionText: "Foco: Reutilização de código. Chame a sub-rotina repetidas vezes para navegar."
   },
   {
     id: 8,
@@ -130,9 +132,9 @@ const LEVELS = [
     description: "Conceito: Escopo Geral. Você chegou ao núcleo central da HELENA. Colete a chave de bypass, desarme os firewalls e abra a porta lógica final para salvar o Data Center.",
     grid: [
       ['#', '#', '#', '#', '#', '#', '#', '#', '#'],
-      ['#', 'S', '.', 'T', 'D', 'G', '#', '#', '#'],
-      ['#', '#', '.', '#', '#', '#', '#', '#', '#'],
-      ['#', 'B', '.', 'K', '.', '#', '#', '#', '#'],
+      ['#', 'S', '.', 'T', 'D', 'G', '.', '.', '#'],
+      ['#', '.', '.', '.', '.', '.', '.', '.', '#'],
+      ['#', 'B', '.', 'K', '.', '.', '.', '.', '#'],
       ['#', '#', '#', '#', '#', '#', '#', '#', '#']
     ],
     startPos: { r: 1, c: 1 },
@@ -140,7 +142,7 @@ const LEVELS = [
     minInstructions: 9,
     maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "collect_key", "open_door", "switch_laser", "loop_2", "if_clear_forward"],
-    instructionText: "Foco: Pensamento Computacional integrado. Combine loops, condicionais e chaves para vencer."
+    instructionText: "Foco: Pensamento Computacional integrado. Trace sua rota combinando todos os conceitos aprendidos."
   }
 ];
 

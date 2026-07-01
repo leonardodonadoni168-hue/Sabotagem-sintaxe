@@ -84,10 +84,9 @@ function runSimulation(level, commandQueue, functionQueue = []) {
       const nextPos = getNextPosition(robotPos, robotDir);
       const cell = checkCell(grid, nextPos);
       
-      robotPos = nextPos;
-      
       // Se for laser, verifica se está ativo
       if (cell === "T" && !lasersDisabled) {
+        robotPos = nextPos;
         currentStatus = "TRAPPED";
         timeline.push({
           step: stepCounter++,
@@ -98,7 +97,7 @@ function runSimulation(level, commandQueue, functionQueue = []) {
           lasersDisabled: lasersDisabled,
           activeCardId: cardId,
           status: currentStatus,
-          message: label + "💥 RUNTIME ERROR: Circuito queimado! O robô colidiu com um Laser ativo (T).",
+          message: label + "💥 RUNTIME ERROR: Circuito queimado! O AlgoBot colidiu com um Laser ativo (T).",
           highlightQueueIdxs: highlightQueue,
           highlightFuncIdxs: highlightFunc,
           gridState: grid.map(row => [...row])
@@ -106,12 +105,11 @@ function runSimulation(level, commandQueue, functionQueue = []) {
         return false;
       }
       
-      // Se for porta trancada ou parede ou fora do grid
+      // Se for porta trancada ou parede ou fora do grid, apenas bloqueia o movimento (não causa falha)
       if (cell === "#" || cell === "OUT_OF_BOUNDS" || cell === "D") {
-        currentStatus = "CRASHED";
-        let errorMsg = "💥 BUG DE COLISÃO: O robô tentou mover-se contra uma parede de metal (#).";
+        let warningMsg = "⚠️ AVISO: Movimento bloqueado por parede física (#). O AlgoBot permaneceu na mesma posição.";
         if (cell === "D") {
-          errorMsg = "💥 ACESSO NEGADO: Porta trancada (D) bloqueou o robô. É necessário desbloqueá-la primeiro.";
+          warningMsg = "⚠️ AVISO: Movimento bloqueado por porta trancada (D). O AlgoBot permaneceu na mesma posição.";
         }
         timeline.push({
           step: stepCounter++,
@@ -121,14 +119,17 @@ function runSimulation(level, commandQueue, functionQueue = []) {
           keysCollected: keysCollected,
           lasersDisabled: lasersDisabled,
           activeCardId: cardId,
-          status: currentStatus,
-          message: label + errorMsg,
+          status: "RUNNING",
+          message: label + warningMsg,
           highlightQueueIdxs: highlightQueue,
           highlightFuncIdxs: highlightFunc,
           gridState: grid.map(row => [...row])
         });
-        return false;
+        return true;
       }
+      
+      // Movimento livre e válido
+      robotPos = nextPos;
       
       // Se atingir a saída (Gate)
       if (cell === "G") {
