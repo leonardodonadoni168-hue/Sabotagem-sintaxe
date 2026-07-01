@@ -87,7 +87,6 @@ const elements = {
   discussionOutcomeText: document.getElementById("discussion-outcome-text"),
   revealedQueueList: document.getElementById("revealed-queue-list"),
   pedagogicalReportContent: document.getElementById("pedagogical-report-content"),
-  quarantineCandidates: document.getElementById("quarantine-candidates"),
   btnNextRound: document.getElementById("btn-next-round"),
   
   // Game Over
@@ -313,10 +312,9 @@ function renderCommandQueue() {
   
   const activePlayer = gameState.players[gameState.activePlayerIndex];
   const isSaboteur = activePlayer.role === "CORRUPTED_AI" || activePlayer.role === "HACKER";
-  const cannotCompile = isSaboteur || activePlayer.isQuarantined;
   
   elements.btnTriggerCompile.innerText = `🚀 Compilar (Mínimo: ${minRequired})`;
-  if (gameState.commandQueue.length >= minRequired && !cannotCompile) {
+  if (gameState.commandQueue.length >= minRequired && !isSaboteur) {
     elements.btnTriggerCompile.classList.remove("btn-disabled");
   } else {
     elements.btnTriggerCompile.classList.add("btn-disabled");
@@ -393,14 +391,8 @@ function setupActivePlayerTurn() {
   
   elements.turnPrivacyScreen.style.display = "block";
   elements.playerHandInterface.style.display = "none";
-  
-  if (activePlayer.isQuarantined) {
-    elements.privacyPlayerName.innerText = `${activePlayer.name} [QUARENTENA ATIVA]`;
-    elements.turnPrivacyScreen.querySelector("p").innerText = "Este terminal está sob observação por suspeita de sabotagem. Seus privilégios de gravação de código foram suspensos.";
-  } else {
-    elements.privacyPlayerName.innerText = activePlayer.name;
-    elements.turnPrivacyScreen.querySelector("p").innerText = "Os outros jogadores devem desviar o olhar para proteger suas cartas e cargo.";
-  }
+  elements.privacyPlayerName.innerText = activePlayer.name;
+  elements.turnPrivacyScreen.querySelector("p").innerText = "Os outros jogadores devem desviar o olhar para proteger suas cartas e cargo.";
   
   // Reseta classe do contêiner para mudar bordas de acordo com a classe do jogador
   elements.playerTurnPanel.className = "panel player-turn-panel";
@@ -412,14 +404,8 @@ elements.btnRevealMyTurn.addEventListener("click", () => {
   elements.playerHandInterface.style.display = "block";
   
   const activePlayer = gameState.players[gameState.activePlayerIndex];
-  
-  if (activePlayer.isQuarantined) {
-    elements.activePlayerName.innerText = `${activePlayer.name} (Quarentena)`;
-    elements.activePlayerName.style.color = "var(--neon-pink)";
-  } else {
-    elements.activePlayerName.innerText = activePlayer.name;
-    elements.activePlayerName.style.color = "var(--neon-green)";
-  }
+  elements.activePlayerName.innerText = activePlayer.name;
+  elements.activePlayerName.style.color = "var(--neon-green)";
   
   const roleInfo = ROLES[activePlayer.role];
   elements.playerRoleBadge.innerText = roleInfo.name;
@@ -428,7 +414,7 @@ elements.btnRevealMyTurn.addEventListener("click", () => {
     
   // Configuração do botão de Habilidade de classe
   elements.btnUseClassSkill.innerText = `⚡ Hab: ${getSkillName(activePlayer.role)}`;
-  if (activePlayer.skillUsed || activePlayer.isQuarantined) {
+  if (activePlayer.skillUsed) {
     elements.btnUseClassSkill.classList.add("btn-disabled");
     elements.btnUseClassSkill.style.opacity = "0.4";
   } else {
@@ -514,18 +500,7 @@ function updatePlayControls() {
   const activePlayer = gameState.players[gameState.activePlayerIndex];
   const currentLevel = LEVELS[gameState.currentLevelIndex];
   
-  if (activePlayer.isQuarantined) {
-    elements.btnPlayVisible.classList.add("btn-disabled");
-    elements.btnPlayFunc.classList.add("btn-disabled");
-    elements.btnPlayHidden.classList.add("btn-disabled");
-    if (selectedHandCardIdx !== null) {
-      elements.btnDiscard.classList.remove("btn-disabled");
-    } else {
-      elements.btnDiscard.classList.add("btn-disabled");
-    }
-    return;
-  }
-  
+
   if (gameState.commandQueue.length >= currentLevel.maxInstructions) {
     elements.btnPlayVisible.classList.add("btn-disabled");
     elements.btnPlayFunc.classList.add("btn-disabled");
@@ -1059,39 +1034,7 @@ function startDiscussionPhase() {
   // 2. Relatório Pedagógico Didático
   generatePedagogicalReport();
   
-  // 3. Votação de Quarentena
-  elements.quarantineCandidates.innerHTML = "";
-  let availableCandidates = 0;
-  
-  gameState.players.forEach(player => {
-    if (!player.isQuarantined) {
-      availableCandidates++;
-      const btn = document.createElement("button");
-      btn.className = "btn btn-pink";
-      btn.style.padding = "0.3rem 0.6rem";
-      btn.style.fontSize = "0.75rem";
-      btn.innerText = `🚨 Quarentena: ${player.name}`;
-      
-      btn.addEventListener("click", () => {
-        const confirmExile = confirm(`Confirmar Isolamento: A mesa concorda em colocar ${player.name} em Quarentena?`);
-        if (confirmExile) {
-          player.isQuarantined = true;
-          alert(`[SISTEMA DE SEGURANÇA] O terminal do desenvolvedor ${player.name} foi colocado em quarentena pela equipe. Seus privilégios de gravação de código foram suspensos.`);
-          startDiscussionPhase(); // Atualiza a tela
-        }
-      });
-      elements.quarantineCandidates.appendChild(btn);
-    }
-  });
-  
-  if (availableCandidates === 0) {
-    const emptyMsg = document.createElement("span");
-    emptyMsg.style.fontSize = "0.8rem";
-    emptyMsg.style.color = "var(--text-muted)";
-    emptyMsg.innerText = "Nenhum desenvolvedor qualificado restante para quarentena.";
-    elements.quarantineCandidates.appendChild(emptyMsg);
-  }
-  
+
   const isLastRound = gameState.currentRound >= LEVELS.length;
   elements.btnNextRound.innerText = isLastRound ? "Desligar HELENA (Resultado Final) 🏁" : "Ir para o Próximo Setor ➡️";
   

@@ -119,7 +119,6 @@ function setupGame(names) {
     role: null,
     hand: [],
     skillUsed: false, // Controla uso de habilidade por rodada
-    isQuarantined: false, // Quarentena (bloqueado de programar)
     hiddenCardsPlayed: 0 // Quantidade de cartas ocultas jogadas na rodada
   }));
   
