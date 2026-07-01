@@ -413,7 +413,7 @@ input[type="text"]:focus {
 /* ==================== TELA DE JOGO (PLAYING) ==================== */
 .playing-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
+  grid-template-columns: 280px minmax(0, 1fr);
   gap: 1.5rem;
 }
 
@@ -657,7 +657,7 @@ input[type="text"]:focus {
 /* ==================== TELA DE EXECUÇÃO / DEPURADOR ==================== */
 .execution-layout {
   display: grid;
-  grid-template-columns: 1fr 340px;
+  grid-template-columns: minmax(0, 1fr) 340px;
   gap: 1.5rem;
 }
 
