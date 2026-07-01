@@ -307,7 +307,11 @@ function renderCommandQueue() {
   elements.queueSize.innerText = gameState.commandQueue.length;
   
   // Habilita ou desabilita botão de Compilar
-  if (gameState.commandQueue.length > 0) {
+  const currentLevel = LEVELS[gameState.currentLevelIndex];
+  const minRequired = Math.ceil(currentLevel.maxInstructions * 0.75);
+  
+  elements.btnTriggerCompile.innerText = `🚀 Compilar (Mínimo: ${minRequired})`;
+  if (gameState.commandQueue.length >= minRequired) {
     elements.btnTriggerCompile.classList.remove("btn-disabled");
   } else {
     elements.btnTriggerCompile.classList.add("btn-disabled");
