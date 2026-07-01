@@ -309,7 +309,7 @@ function renderCommandQueue() {
   
   // Habilita ou desabilita botão de Compilar
   const currentLevel = LEVELS[gameState.currentLevelIndex];
-  const minRequired = Math.ceil(currentLevel.maxInstructions * 0.75);
+  const minRequired = currentLevel.minInstructions;
   
   elements.btnTriggerCompile.innerText = `🚀 Compilar (Mínimo: ${minRequired})`;
   if (gameState.commandQueue.length >= minRequired) {
@@ -728,9 +728,9 @@ function triggerSkillTargetSelect(clickedId) {
 }
 
 function refreshAfterPlay() {
-  const currentLevel = LEVELS[gameState.currentLevelIndex];
-  if (gameState.commandQueue.length >= currentLevel.maxInstructions) {
-    alert("Escopo de capacidade máxima atingido. Compilando automaticamente...");
+  const allHandsEmpty = gameState.players.every(p => p.hand.length === 0);
+  if (allHandsEmpty && gameState.deck.length === 0) {
+    alert("Cache Esgotado! O deck e a mão de todos os especialistas estão vazios. Compilando o algoritmo final...");
     triggerSimulationCompile();
   } else {
     startProgrammingPhase();

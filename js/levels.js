@@ -13,9 +13,10 @@ const LEVELS = [
     ],
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
-    maxInstructions: 6,
+    minInstructions: 5,
+    maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right"],
-    instructionText: "Foco: Sequenciamento básico linear. Ande 5 casas à frente."
+    instructionText: "Foco: Sequenciamento básico linear. Mova-se até a saída."
   },
   {
     id: 2,
@@ -30,9 +31,10 @@ const LEVELS = [
     ],
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
-    maxInstructions: 10,
+    minInstructions: 6,
+    maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right"],
-    instructionText: "Foco: Decomposição de caminhos. Mova-se para baixo, contorne o processador e suba até o Gate."
+    instructionText: "Foco: Decomposição de caminhos. Mova-se contornando o processador de dados."
   },
   {
     id: 3,
@@ -47,14 +49,15 @@ const LEVELS = [
     ],
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
-    maxInstructions: 12,
+    minInstructions: 6,
+    maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "collect_key", "open_door"],
-    instructionText: "Foco: Relação entre estado e ação. Desça para coletar a chave (K), suba, e desbloqueie a porta (D) na frente de G."
+    instructionText: "Foco: Gerenciamento de estado. Desça para coletar a chave (K) e abra a porta (D)."
   },
   {
     id: 4,
     name: "Setor 4: O Corredor de Loops",
-    description: "Conceito: Estrutura de Repetição (Loops). O terminal está no final de um corredor extenso de fibra óptica. O limite de cartões de comando é baixo, forçando o uso de blocos de repetição.",
+    description: "Conceito: Estrutura de Repetição (Loops). O terminal está no final de um corredor extenso de fibra óptica. Utilize blocos de repetição.",
     grid: [
       ['#', '#', '#', '#', '#', '#', '#', '#', '#', '#'],
       ['#', 'S', '.', '.', '.', '.', '.', '.', 'G', '#'],
@@ -62,9 +65,10 @@ const LEVELS = [
     ],
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
-    maxInstructions: 4, // Apenas 4 instruções força o uso de loop!
-    allowedBlocks: ["forward", "left", "right", "loop_3", "loop_4", "loop_6"],
-    instructionText: "Foco: Sintaxe de Loops. Use um comando Repetir (Loop) seguido de Mover Frente para avançar com eficácia."
+    minInstructions: 2,
+    maxInstructions: 25,
+    allowedBlocks: ["forward", "left", "right", "loop_2", "loop_3", "loop_4", "loop_6"],
+    instructionText: "Foco: Repetição em loops. Repita o avanço para economizar blocos."
   },
   {
     id: 5,
@@ -79,9 +83,10 @@ const LEVELS = [
     ],
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
-    maxInstructions: 14,
+    minInstructions: 8,
+    maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "switch_laser"],
-    instructionText: "Foco: Interação de ambiente. Passe sobre o interruptor (B) e use o comando 'Interromper Laser' para limpar o caminho T."
+    instructionText: "Foco: Interruptor de evento. Fique sobre B e desligue o laser antes de cruzar T."
   },
   {
     id: 6,
@@ -96,9 +101,10 @@ const LEVELS = [
     ],
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
-    maxInstructions: 6,
+    minInstructions: 4,
+    maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "if_clear_forward"],
-    instructionText: "Foco: Estruturas condicionais. O robô deve testar se a parede está livre para decidir a rota."
+    instructionText: "Foco: Estruturas condicionais. Use o sensor IF para escolher o caminho dinamicamente."
   },
   {
     id: 7,
@@ -113,9 +119,10 @@ const LEVELS = [
     ],
     startPos: { r: 3, c: 1 },
     startDir: "RIGHT",
-    maxInstructions: 8,
+    minInstructions: 4,
+    maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "call_func", "loop_2"],
-    instructionText: "Foco: Reutilização de código. Crie uma sub-rotina de curvas e chame a função repetidamente."
+    instructionText: "Foco: Reutilização de código. Crie uma sub-rotina de curva e chame-a repetidamente."
   },
   {
     id: 8,
@@ -130,9 +137,10 @@ const LEVELS = [
     ],
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
-    maxInstructions: 16,
+    minInstructions: 9,
+    maxInstructions: 25,
     allowedBlocks: ["forward", "left", "right", "collect_key", "open_door", "switch_laser", "loop_2", "if_clear_forward"],
-    instructionText: "Foco: Pensamento Computacional integrado. Utilize sequências, repetições, condicionais e estado combinados."
+    instructionText: "Foco: Pensamento Computacional integrado. Combine loops, condicionais e chaves para vencer."
   }
 ];
 

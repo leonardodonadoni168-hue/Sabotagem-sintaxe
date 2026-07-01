@@ -66,21 +66,21 @@ const CARD_TYPES = {
 
 // Baralho mestre de distribuição
 const BASE_DECK = [
-  ...Array(14).fill("FORWARD"),
-  ...Array(10).fill("LEFT"),
-  ...Array(10).fill("RIGHT"),
-  ...Array(4).fill("COLLECT_KEY"),
-  ...Array(4).fill("OPEN_DOOR"),
-  ...Array(4).fill("SWITCH_LASER"),
-  ...Array(4).fill("LOOP_2"),
-  ...Array(3).fill("LOOP_3"),
-  ...Array(2).fill("LOOP_4"),
+  ...Array(24).fill("FORWARD"),
+  ...Array(16).fill("LEFT"),
+  ...Array(16).fill("RIGHT"),
+  ...Array(6).fill("COLLECT_KEY"),
+  ...Array(6).fill("OPEN_DOOR"),
+  ...Array(6).fill("SWITCH_LASER"),
+  ...Array(5).fill("LOOP_2"),
+  ...Array(4).fill("LOOP_3"),
+  ...Array(3).fill("LOOP_4"),
   ...Array(2).fill("LOOP_6"),
-  ...Array(5).fill("IF_CLEAR"),
-  ...Array(2).fill("CALL_FUNC"),
+  ...Array(6).fill("IF_CLEAR"),
+  ...Array(4).fill("CALL_FUNC"),
   ...Array(3).fill("REVEAL"),
-  ...Array(3).fill("DELETE"),
-  ...Array(2).fill("INVERT")
+  ...Array(4).fill("DELETE"),
+  ...Array(3).fill("INVERT")
 ];
 
 const gameState = {
