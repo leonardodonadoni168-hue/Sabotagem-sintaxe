@@ -118,7 +118,9 @@ function setupGame(names) {
     name: name,
     role: null,
     hand: [],
-    skillUsed: false // Controla uso de habilidade por rodada
+    skillUsed: false, // Controla uso de habilidade por rodada
+    isQuarantined: false, // Quarentena (bloqueado de programar)
+    hiddenCardsPlayed: 0 // Quantidade de cartas ocultas jogadas na rodada
   }));
   
   gameState.currentLevelIndex = 0;
@@ -156,6 +158,7 @@ function startRound() {
     player.role = rolesPool[i];
     player.hand = [];
     player.skillUsed = false; // Reseta habilidade
+    player.hiddenCardsPlayed = 0; // Reseta limite de cartas ocultas
   });
   
   // 2. Filtrar baralho pelas regras do nível atual
@@ -214,6 +217,10 @@ function playCommandCard(playerIndex, cardIndex, isHidden) {
   if (!card || card.type !== "command") return false;
   
   player.hand.splice(cardIndex, 1);
+  
+  if (isHidden) {
+    player.hiddenCardsPlayed++;
+  }
   
   gameState.commandQueue.push({
     id: generateId(),
@@ -306,13 +313,18 @@ function useClassSkill(playerIndex, skillData) {
   } 
   
   else if (roleId === "DEBUGGER") {
-    // Remover o último bloco inserido
-    if (gameState.commandQueue.length > 0) {
-      const removed = gameState.commandQueue.pop();
-      msg = `${player.name} (Debugger) usou Remover Bug e deletou o último comando inserido (${removed.card.name}).`;
+    // Remover qualquer bloco selecionado na fila
+    const target = gameState.commandQueue.find(item => item.id === skillData.targetId);
+    if (target) {
+      if (target.isProtected) {
+        return { success: false, msg: "Acesso Negado! Esse bloco está sob proteção criptográfica do Hacker." };
+      }
+      const idx = gameState.commandQueue.indexOf(target);
+      gameState.commandQueue.splice(idx, 1);
+      msg = `${player.name} (Debugger) usou Remover Bug e deletou o comando "${target.card.name}" na linha ${idx + 1}.`;
       success = true;
     } else {
-      return { success: false, msg: "A fila de comandos está vazia." };
+      return { success: false, msg: "Selecione uma instrução da fila para depurar." };
     }
   } 
   
