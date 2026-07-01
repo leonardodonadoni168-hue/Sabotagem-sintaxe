@@ -311,8 +311,12 @@ function renderCommandQueue() {
   const currentLevel = LEVELS[gameState.currentLevelIndex];
   const minRequired = currentLevel.minInstructions;
   
+  const activePlayer = gameState.players[gameState.activePlayerIndex];
+  const isSaboteur = activePlayer.role === "CORRUPTED_AI" || activePlayer.role === "HACKER";
+  const cannotCompile = isSaboteur || activePlayer.isQuarantined;
+  
   elements.btnTriggerCompile.innerText = `🚀 Compilar (Mínimo: ${minRequired})`;
-  if (gameState.commandQueue.length >= minRequired) {
+  if (gameState.commandQueue.length >= minRequired && !cannotCompile) {
     elements.btnTriggerCompile.classList.remove("btn-disabled");
   } else {
     elements.btnTriggerCompile.classList.add("btn-disabled");
