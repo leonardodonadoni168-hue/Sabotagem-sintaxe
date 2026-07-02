@@ -313,6 +313,14 @@ function renderCommandQueue() {
   const activePlayer = gameState.players[gameState.activePlayerIndex];
   const isSaboteur = activePlayer.role === "CORRUPTED_AI" || activePlayer.role === "HACKER";
   
+  console.log("[DEBUG] Compile button state evaluation:", {
+    queueLength: gameState.commandQueue.length,
+    minRequired: minRequired,
+    activePlayer: activePlayer ? activePlayer.name : null,
+    role: activePlayer ? activePlayer.role : null,
+    isSaboteur: isSaboteur
+  });
+  
   elements.btnTriggerCompile.innerText = `🚀 Compilar (Mínimo: ${minRequired})`;
   if (gameState.commandQueue.length >= minRequired && !isSaboteur) {
     elements.btnTriggerCompile.classList.remove("btn-disabled");
@@ -682,13 +690,23 @@ function refreshAfterPlay() {
 }
 
 elements.btnTriggerCompile.addEventListener("click", () => {
-  if (gameState.commandQueue.length === 0) return;
+  console.log("[DEBUG] Compile button clicked. Queue size:", gameState.commandQueue.length);
+  if (gameState.commandQueue.length === 0) {
+    console.warn("[DEBUG] Compile cancelled: Queue is empty.");
+    return;
+  }
   triggerSimulationCompile();
 });
 
 function triggerSimulationCompile() {
+  console.log("[DEBUG] Triggering simulation compile. Switching phase to EXECUTION.");
   gameState.phase = "EXECUTION";
-  startExecutionPhase();
+  try {
+    startExecutionPhase();
+  } catch (err) {
+    console.error("[DEBUG] CRITICAL: startExecutionPhase failed:", err);
+    alert("Erro na compilação. Abra o Console do Desenvolvedor (F12) para ver os detalhes.");
+  }
 }
 
 // --- TELA 4: EXECUÇÃO & DEPURADOR ---
