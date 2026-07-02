@@ -528,6 +528,8 @@ function updatePlayControls() {
     elements.btnPlayVisible.classList.add("btn-disabled");
     elements.btnPlayHidden.classList.add("btn-disabled");
   }
+}
+
 elements.btnPlayVisible.addEventListener("click", () => {
   if (selectedHandCardIdx === null) return;
   playCommandCard(gameState.activePlayerIndex, selectedHandCardIdx, false);
