@@ -775,19 +775,7 @@ function renderSimulationStep() {
     });
   }
   
-  // 2. Destacar card na fila da função
-  const funcCards = elements.execFuncContainer.children;
-  for (let i = 0; i < funcCards.length; i++) {
-    funcCards[i].classList.remove("active-execution");
-  }
-  if (step.highlightFuncIdxs && step.highlightFuncIdxs.length > 0) {
-    step.highlightFuncIdxs.forEach(idx => {
-      if (funcCards[idx]) {
-        funcCards[idx].classList.add("active-execution");
-        funcCards[idx].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-      }
-    });
-  }
+
   
   // 3. Desenhar tabuleiro com base no estado do grid do passo atual
   drawExecutionBoard(step.gridState, step);
