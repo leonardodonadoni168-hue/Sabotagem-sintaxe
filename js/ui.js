@@ -737,7 +737,6 @@ function logTerminal(msg, type = "info") {
 
 function renderExecQueues() {
   renderQueueTrack(gameState.commandQueue, elements.execQueueContainer, false);
-  renderQueueTrack(gameState.functionQueue, elements.execFuncContainer, true);
 }
 
 function renderSimulationStep() {

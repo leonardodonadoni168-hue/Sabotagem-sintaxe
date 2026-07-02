@@ -85,6 +85,7 @@ const gameState = {
   players: [],
   deck: [],
   commandQueue: [], // Array de { id, card, ownerName, ownerId, isHidden, isProtected, revealed }
+  functionQueue: [], // Garantia de inicialização global
   currentLevelIndex: 0,
   currentRound: 1,
   activePlayerIndex: 0,
