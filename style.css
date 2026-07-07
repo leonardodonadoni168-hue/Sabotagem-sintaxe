@@ -664,7 +664,12 @@ input[type="text"]:focus {
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
-  align-items: center;
+  align-items: stretch;
+}
+
+.debugger-queue {
+  width: 100%;
+  overflow: hidden;
 }
 
 .board-grid-wrapper {
