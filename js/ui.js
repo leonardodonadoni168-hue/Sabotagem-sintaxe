@@ -321,10 +321,10 @@ function renderCommandQueue() {
     isSaboteur: isSaboteur
   });
   
-  const isPrivacyActive = elements.turnPrivacyScreen.style.display === "block";
+  const isHandVisible = elements.playerHandInterface.style.display === "block";
   
   elements.btnTriggerCompile.innerText = `🚀 Compilar (Mínimo: ${minRequired})`;
-  if (gameState.commandQueue.length >= minRequired && !isSaboteur && !isPrivacyActive) {
+  if (gameState.commandQueue.length >= minRequired && !isSaboteur && isHandVisible) {
     elements.btnTriggerCompile.classList.remove("btn-disabled");
   } else {
     elements.btnTriggerCompile.classList.add("btn-disabled");
