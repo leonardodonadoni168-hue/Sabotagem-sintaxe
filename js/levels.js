@@ -15,7 +15,7 @@ const LEVELS = [
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
     minInstructions: 5,
-    maxInstructions: 8,
+    maxInstructions: 10,
     allowedBlocks: ["forward", "left", "right"],
     instructionText: "Foco: Sequenciamento básico linear. Mova-se até a saída. Se bater nas bordas, o robô permanece no lugar!"
   },
@@ -33,7 +33,7 @@ const LEVELS = [
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
     minInstructions: 6,
-    maxInstructions: 11,
+    maxInstructions: 13,
     allowedBlocks: ["forward", "left", "right"],
     instructionText: "Foco: Decomposição de caminhos. Contorne o processador central por cima ou por baixo."
   },
@@ -51,7 +51,7 @@ const LEVELS = [
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
     minInstructions: 6,
-    maxInstructions: 13,
+    maxInstructions: 15,
     allowedBlocks: ["forward", "left", "right", "collect_key", "open_door"],
     instructionText: "Foco: Gerenciamento de estado. Colete a chave (K) e abra a porta (D) para acessar G."
   },
@@ -68,7 +68,7 @@ const LEVELS = [
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
     minInstructions: 3,
-    maxInstructions: 8,
+    maxInstructions: 10,
     allowedBlocks: ["forward", "left", "right", "loop_2", "loop_3", "loop_4", "loop_6"],
     instructionText: "Foco: Repetição em loops. Poupe blocos executando um loop para avançar."
   },
@@ -86,7 +86,7 @@ const LEVELS = [
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
     minInstructions: 6,
-    maxInstructions: 12,
+    maxInstructions: 14,
     allowedBlocks: ["forward", "left", "right", "switch_laser"],
     instructionText: "Foco: Interruptor de evento. Fique sobre B e desarme o laser antes de passar por T."
   },
@@ -104,7 +104,7 @@ const LEVELS = [
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
     minInstructions: 5,
-    maxInstructions: 10,
+    maxInstructions: 12,
     allowedBlocks: ["forward", "left", "right", "if_clear_forward"],
     instructionText: "Foco: Estruturas condicionais. Use IF para testar o caminho em tempo real."
   },
@@ -122,7 +122,7 @@ const LEVELS = [
     startPos: { r: 3, c: 1 },
     startDir: "RIGHT",
     minInstructions: 5,
-    maxInstructions: 10,
+    maxInstructions: 12,
     allowedBlocks: ["forward", "left", "right", "loop_2"],
     instructionText: "Foco: Reutilização de código. Chame a sub-rotina repetidas vezes para navegar."
   },
@@ -140,7 +140,7 @@ const LEVELS = [
     startPos: { r: 1, c: 1 },
     startDir: "RIGHT",
     minInstructions: 8,
-    maxInstructions: 15,
+    maxInstructions: 17,
     allowedBlocks: ["forward", "left", "right", "collect_key", "open_door", "switch_laser", "loop_2", "if_clear_forward"],
     instructionText: "Foco: Pensamento Computacional integrado. Trace sua rota combinando todos os conceitos aprendidos."
   }
