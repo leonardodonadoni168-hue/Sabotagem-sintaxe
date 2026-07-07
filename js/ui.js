@@ -321,8 +321,10 @@ function renderCommandQueue() {
     isSaboteur: isSaboteur
   });
   
+  const isPrivacyActive = elements.turnPrivacyScreen.style.display === "block";
+  
   elements.btnTriggerCompile.innerText = `🚀 Compilar (Mínimo: ${minRequired})`;
-  if (gameState.commandQueue.length >= minRequired && !isSaboteur) {
+  if (gameState.commandQueue.length >= minRequired && !isSaboteur && !isPrivacyActive) {
     elements.btnTriggerCompile.classList.remove("btn-disabled");
   } else {
     elements.btnTriggerCompile.classList.add("btn-disabled");
@@ -404,6 +406,9 @@ function setupActivePlayerTurn() {
   // Reseta classe do contêiner para mudar bordas de acordo com a classe do jogador
   elements.playerTurnPanel.className = "panel player-turn-panel";
   elements.playerTurnPanel.classList.add(`${activePlayer.role.toLowerCase()}-active`);
+  
+  // Sempre desabilita o botão de compilar enquanto a tela de privacidade estiver ativa
+  elements.btnTriggerCompile.classList.add("btn-disabled");
 }
 
 elements.btnRevealMyTurn.addEventListener("click", () => {
@@ -432,6 +437,9 @@ elements.btnRevealMyTurn.addEventListener("click", () => {
   
   renderPlayerHand(activePlayer);
   updatePlayControls();
+  
+  // Re-avalia o estado do botão de compilar após a revelação
+  renderCommandQueue();
 });
 
 function getSkillName(role) {
