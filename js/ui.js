@@ -65,7 +65,14 @@ const elements = {
   btnPlayVisible: document.getElementById("btn-play-visible"),
   btnPlayHidden: document.getElementById("btn-play-hidden"),
   btnDiscard: document.getElementById("btn-discard"),
+  btnPassTurn: document.getElementById("btn-pass-turn"),
   btnTriggerCompile: document.getElementById("btn-trigger-compile"),
+  playerStatusWidget: document.getElementById("player-status-widget"),
+  
+  // Controles de Ação com Alvo
+  actionTargetControls: document.getElementById("action-target-controls"),
+  actionTargetSelect: document.getElementById("action-target-select"),
+  btnPlayActionTarget: document.getElementById("btn-play-action-target"),
   
   // Execução / Depurador
   execLevelName: document.getElementById("exec-level-name"),
@@ -119,7 +126,18 @@ function updateHeaderStats() {
     const box = document.createElement("div");
     box.className = "stat-box";
     box.style.fontSize = "0.75rem";
-    box.innerHTML = `${player.name}: <span style="font-weight:bold; color: var(--neon-cyan);">${player.score || 0}</span> pts`;
+    
+    let blockString = "";
+    if (player.blocks && player.blocks.length > 0) {
+      player.blocks.forEach(b => {
+        if (b === "COMPILER") blockString += " 🛠️";
+        if (b === "CONNECTION") blockString += " 📶";
+        if (b === "HARDWARE") blockString += " 🔥";
+      });
+      blockString = ` <span style="animation: cardPulse 1s infinite alternate;" title="Terminal Bloqueado!">${blockString}</span>`;
+    }
+    
+    box.innerHTML = `${player.name}: <span style="font-weight:bold; color: var(--neon-cyan);">${player.score || 0}</span> pts${blockString}`;
     elements.individualScoresContainer.appendChild(box);
   });
 }
@@ -260,45 +278,47 @@ function startProgrammingPhase() {
   elements.queueMax.innerText = currentLevel.maxInstructions;
   
   renderMiniMap(currentLevel);
+  renderPlayerStatusWidget();
   renderCommandQueue();
   setupActivePlayerTurn();
   
   showScreen(elements.screenPlaying);
 }
 
-function renderMiniMap(level) {
-  elements.playingMiniMap.innerHTML = "";
-  const grid = level.grid;
+function renderPlayerStatusWidget() {
+  if (!elements.playerStatusWidget) return;
+  elements.playerStatusWidget.innerHTML = "";
   
-  elements.playingMiniMap.style.display = "grid";
-  elements.playingMiniMap.style.gridTemplateRows = `repeat(${grid.length}, 22px)`;
-  elements.playingMiniMap.style.gridTemplateColumns = `repeat(${grid[0].length}, 22px)`;
-  elements.playingMiniMap.style.gap = "2px";
-  
-  for (let r = 0; r < grid.length; r++) {
-    for (let c = 0; c < grid[0].length; c++) {
-      const cell = document.createElement("div");
-      cell.style.width = "22px";
-      cell.style.height = "22px";
-      cell.style.borderRadius = "2px";
-      cell.style.display = "flex";
-      cell.style.alignItems = "center";
-      cell.style.justifyContent = "center";
-      cell.style.fontSize = "0.7rem";
-      
-      const val = grid[r][c];
-      if (val === "#") cell.style.background = "#232836";
-      else if (val === "S") cell.style.background = "var(--neon-cyan)";
-      else if (val === "G") cell.style.background = "var(--neon-green)";
-      else if (val === "T") cell.style.background = "var(--neon-pink)";
-      else if (val === "K") { cell.style.background = "rgba(254, 254, 51, 0.15)"; cell.innerText = "🔑"; }
-      else if (val === "D") { cell.style.background = "rgba(249, 115, 22, 0.15)"; cell.innerText = "🚪"; }
-      else if (val === "B") { cell.style.background = "rgba(0, 242, 254, 0.15)"; cell.innerText = "🔘"; }
-      else cell.style.background = "rgba(255,255,255,0.03)";
-      
-      elements.playingMiniMap.appendChild(cell);
+  gameState.players.forEach(p => {
+    const item = document.createElement("div");
+    item.style.padding = "0.3rem 0.6rem";
+    item.style.borderRadius = "4px";
+    item.style.fontSize = "0.75rem";
+    item.style.background = "rgba(0,0,0,0.3)";
+    item.style.border = "1px solid var(--border-color)";
+    item.style.display = "flex";
+    item.style.alignItems = "center";
+    item.style.justifyContent = "space-between";
+    
+    const activePlayer = gameState.players[gameState.activePlayerIndex];
+    if (p.id === activePlayer.id) {
+      item.style.borderColor = "var(--neon-green)";
     }
-  }
+    
+    let blockBadge = '<span style="color: var(--neon-green)">✅ OK</span>';
+    if (p.blocks && p.blocks.length > 0) {
+      const icons = p.blocks.map(b => {
+        if (b === "COMPILER") return "🛠️ Bug Sintaxe";
+        if (b === "CONNECTION") return "📶 Falha Rede";
+        if (b === "HARDWARE") return "🔥 Overheat";
+        return "⚠️ Bloqueado";
+      }).join(", ");
+      blockBadge = `<span style="color: var(--neon-pink); font-weight: 800;">⚠️ ${icons}</span>`;
+    }
+    
+    item.innerHTML = `<span><strong>${p.name}:</strong></span> ${blockBadge}`;
+    elements.playerStatusWidget.appendChild(item);
+  });
 }
 
 function renderCommandQueue() {
@@ -310,21 +330,12 @@ function renderCommandQueue() {
   const currentLevel = LEVELS[gameState.currentLevelIndex];
   const minRequired = currentLevel.minInstructions;
   
-  const activePlayer = gameState.players[gameState.activePlayerIndex];
-  const isSaboteur = activePlayer.role === "CORRUPTED_AI" || activePlayer.role === "HACKER";
-  
-  console.log("[DEBUG] Compile button state evaluation:", {
-    queueLength: gameState.commandQueue.length,
-    minRequired: minRequired,
-    activePlayer: activePlayer ? activePlayer.name : null,
-    role: activePlayer ? activePlayer.role : null,
-    isSaboteur: isSaboteur
-  });
-  
   const isHandVisible = elements.playerHandInterface.style.display === "block";
   
   elements.btnTriggerCompile.innerText = `🚀 Compilar (Mínimo: ${minRequired})`;
-  if (gameState.commandQueue.length >= minRequired && !isSaboteur && isHandVisible) {
+  
+  // Qualquer participante pode compilar uma vez atingido o mínimo de comandos!
+  if (gameState.commandQueue.length >= minRequired && isHandVisible) {
     elements.btnTriggerCompile.classList.remove("btn-disabled");
   } else {
     elements.btnTriggerCompile.classList.add("btn-disabled");
@@ -396,6 +407,18 @@ function renderQueueTrack(queue, container, isFunc = false) {
 }
 
 function setupActivePlayerTurn() {
+  const currentLevel = LEVELS[gameState.currentLevelIndex];
+  
+  // Auto-compilação quando a capacidade máxima da fila for atingida
+  if (gameState.commandQueue.length >= currentLevel.maxInstructions) {
+    logAction(`Capacidade máxima (${currentLevel.maxInstructions} instruções) atingida. Compilando automaticamente...`);
+    setTimeout(() => {
+      alert(`⚡ Capacidade máxima do algoritmo (${currentLevel.maxInstructions} instruções) atingida! Compilando e executando automaticamente...`);
+      triggerSimulationCompile();
+    }, 200);
+    return;
+  }
+  
   const activePlayer = gameState.players[gameState.activePlayerIndex];
   
   elements.turnPrivacyScreen.style.display = "block";
@@ -409,14 +432,20 @@ function setupActivePlayerTurn() {
   
   // Sempre desabilita o botão de compilar enquanto a tela de privacidade estiver ativa
   elements.btnTriggerCompile.classList.add("btn-disabled");
+  renderPlayerStatusWidget();
 }
 
 elements.btnRevealMyTurn.addEventListener("click", () => {
   elements.turnPrivacyScreen.style.display = "none";
   elements.playerHandInterface.style.display = "block";
   
+  renderPlayerStatusWidget();
   const activePlayer = gameState.players[gameState.activePlayerIndex];
-  elements.activePlayerName.innerText = activePlayer.name;
+  if (activePlayer.blocks && activePlayer.blocks.length > 0) {
+    elements.activePlayerName.innerHTML = `${activePlayer.name} <span style="color: var(--neon-pink); animation: cardPulse 1s infinite alternate; font-size: 0.8rem; margin-left: 0.5rem; font-weight: 800;">[⚠️ TERMINAL BLOQUEADO]</span>`;
+  } else {
+    elements.activePlayerName.innerText = activePlayer.name;
+  }
   elements.activePlayerName.style.color = "var(--neon-green)";
   
   const roleInfo = ROLES[activePlayer.role];
@@ -465,15 +494,34 @@ function renderPlayerHand(player) {
   selectedHandCardIdx = null;
   activeSkillMode = null;
   
+  // Reseta controles de alvos
+  elements.actionTargetControls.style.display = "none";
+  
   player.hand.forEach((card, idx) => {
     const cardEl = document.createElement("div");
     cardEl.className = "game-card";
-    if (card.type === "action") cardEl.classList.add("action-card");
+    
+    // Identifica cartas de ação/bloqueio/reparo
+    if (card.type === "action" || card.type === "block" || card.type === "repair") {
+      cardEl.classList.add("action-card");
+    }
+    
+    const isBlocked = player.blocks && player.blocks.length > 0;
+    if (card.type === "command" && isBlocked) {
+      cardEl.style.opacity = "0.35";
+      cardEl.style.borderColor = "var(--neon-pink)";
+      cardEl.style.cursor = "not-allowed";
+      cardEl.title = "Terminal bloqueado! Não é possível programar.";
+    }
     
     cardEl.innerHTML = `
       <div>
         <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span style="font-size:0.7rem; font-weight:700;">${card.type === 'action' ? 'AÇÃO' : 'BLOCO'}</span>
+          <span style="font-size:0.7rem; font-weight:700;">${
+            card.type === 'action' ? 'AÇÃO' : 
+            card.type === 'block' ? 'BLOQUEIO' : 
+            card.type === 'repair' ? 'REPARO' : 'BLOCO'
+          }</span>
           <span>${card.icon}</span>
         </div>
         <div style="font-weight:800; font-size:0.8rem; margin-top:0.25rem;">${card.name}</div>
@@ -502,13 +550,90 @@ function selectHandCard(idx, cardEl) {
   
   const activePlayer = gameState.players[gameState.activePlayerIndex];
   const card = activePlayer.hand[idx];
-  if (card && card.type === "action") {
-    activeSkillMode = "ACTION_TARGET";
-    alert("Selecione um bloco no Algoritmo Principal acima para aplicar a carta de ação.");
-    renderCommandQueue();
+  
+  // Reseta controles de alvos por padrão
+  elements.actionTargetControls.style.display = "none";
+  
+  if (card) {
+    if (card.type === "action") {
+      activeSkillMode = "ACTION_TARGET";
+      alert("Selecione um bloco no Algoritmo Principal acima para aplicar a carta de ação.");
+      renderCommandQueue();
+    } else if (card.type === "block" || card.type === "repair") {
+      activeSkillMode = "PLAYER_TARGET";
+      setupPlayerTargetControls(card);
+    }
   }
   
   updatePlayControls();
+}
+
+function setupPlayerTargetControls(card) {
+  const activePlayer = gameState.players[gameState.activePlayerIndex];
+  elements.actionTargetSelect.innerHTML = "";
+  
+  let container = document.getElementById("action-target-buttons");
+  if (!container) {
+    container = document.createElement("div");
+    container.id = "action-target-buttons";
+    container.style.display = "flex";
+    container.style.gap = "0.5rem";
+    container.style.flexWrap = "wrap";
+    container.style.width = "100%";
+    container.style.marginTop = "0.5rem";
+    elements.actionTargetControls.appendChild(container);
+  }
+  container.innerHTML = "";
+  
+  let validTargetFound = false;
+  const validTargets = [];
+  
+  if (card.type === "block") {
+    gameState.players.forEach(p => {
+      if (p.id !== activePlayer.id && !p.blocks.includes(card.blockType)) {
+        validTargets.push(p);
+      }
+    });
+  } else if (card.type === "repair") {
+    gameState.players.forEach(p => {
+      if (p.blocks.includes(card.blockType)) {
+        validTargets.push(p);
+      }
+    });
+  }
+  
+  validTargets.forEach(p => {
+    validTargetFound = true;
+    const opt = document.createElement("option");
+    opt.value = p.id;
+    opt.innerText = p.id === activePlayer.id ? `${p.name} (Você)` : p.name;
+    elements.actionTargetSelect.appendChild(opt);
+    
+    const targetBtn = document.createElement("button");
+    targetBtn.className = "btn " + (card.type === "block" ? "btn-pink" : "btn-green");
+    targetBtn.style.padding = "0.4rem 0.8rem";
+    targetBtn.style.fontSize = "0.8rem";
+    targetBtn.innerHTML = card.type === "block" 
+      ? `💥 Sabotar ${p.name} (${card.icon})` 
+      : `🔧 Reparar ${p.name} (${card.icon})`;
+    targetBtn.addEventListener("click", () => {
+      elements.actionTargetSelect.value = p.id;
+      elements.btnPlayActionTarget.click();
+    });
+    container.appendChild(targetBtn);
+  });
+  
+  if (validTargetFound) {
+    elements.btnPlayActionTarget.classList.remove("btn-disabled");
+    elements.actionTargetControls.style.display = "flex";
+  } else {
+    const opt = document.createElement("option");
+    opt.innerText = "Nenhum alvo válido";
+    elements.actionTargetSelect.appendChild(opt);
+    elements.btnPlayActionTarget.classList.add("btn-disabled");
+    elements.actionTargetControls.style.display = "flex";
+    container.innerHTML = `<span style="color: var(--neon-pink); font-size: 0.8rem;">⚠️ Não há alvos elegíveis para esta carta no momento.</span>`;
+  }
 }
 
 function updatePlayControls() {
@@ -532,17 +657,28 @@ function updatePlayControls() {
   const card = activePlayer.hand[selectedHandCardIdx];
   elements.btnDiscard.classList.remove("btn-disabled");
   
+  const isBlocked = activePlayer.blocks && activePlayer.blocks.length > 0;
+  
   if (card.type === "command") {
-    elements.btnPlayVisible.classList.remove("btn-disabled");
-    
-    if (activePlayer.hiddenCardsPlayed >= 1) {
+    if (isBlocked) {
+      elements.btnPlayVisible.classList.add("btn-disabled");
       elements.btnPlayHidden.classList.add("btn-disabled");
     } else {
-      elements.btnPlayHidden.classList.remove("btn-disabled");
+      elements.btnPlayVisible.classList.remove("btn-disabled");
+      
+      if (activePlayer.hiddenCardsPlayed >= 1) {
+        elements.btnPlayHidden.classList.add("btn-disabled");
+      } else {
+        elements.btnPlayHidden.classList.remove("btn-disabled");
+      }
     }
   } else if (card.type === "action") {
     elements.btnPlayVisible.classList.add("btn-disabled");
     elements.btnPlayHidden.classList.add("btn-disabled");
+  } else if (card.type === "block" || card.type === "repair") {
+    elements.btnPlayVisible.classList.add("btn-disabled");
+    elements.btnPlayHidden.classList.add("btn-disabled");
+    elements.actionTargetControls.style.display = "flex";
   }
 }
 
@@ -562,6 +698,31 @@ elements.btnDiscard.addEventListener("click", () => {
   if (selectedHandCardIdx === null) return;
   discardCard(gameState.activePlayerIndex, selectedHandCardIdx);
   refreshAfterPlay();
+});
+
+if (elements.btnPassTurn) {
+  elements.btnPassTurn.addEventListener("click", () => {
+    const activePlayer = gameState.players[gameState.activePlayerIndex];
+    logAction(`${activePlayer.name} passou a vez sem jogar cartas.`);
+    endTurn();
+    refreshAfterPlay();
+  });
+}
+
+elements.btnPlayActionTarget.addEventListener("click", () => {
+  if (selectedHandCardIdx === null) return;
+  const targetSelect = elements.actionTargetSelect;
+  const targetPlayerId = parseInt(targetSelect.value);
+  
+  if (isNaN(targetPlayerId)) return;
+  
+  const success = playActionCard(gameState.activePlayerIndex, selectedHandCardIdx, {
+    targetPlayerId: targetPlayerId
+  });
+  
+  if (success) {
+    refreshAfterPlay();
+  }
 });
 
 // AÇÃO DE CARTA DE MESA (TIPO SCANNER, INVERT, DELETE)
@@ -688,10 +849,19 @@ function triggerSkillTargetSelect(clickedId) {
 }
 
 function refreshAfterPlay() {
+  const currentLevel = LEVELS[gameState.currentLevelIndex];
+  
+  if (gameState.commandQueue.length >= currentLevel.maxInstructions) {
+    alert(`⚡ Capacidade máxima do algoritmo (${currentLevel.maxInstructions} instruções) atingida! Compilando e executando automaticamente...`);
+    triggerSimulationCompile();
+    return;
+  }
+  
   const allHandsEmpty = gameState.players.every(p => p.hand.length === 0);
   if (allHandsEmpty && gameState.deck.length === 0) {
     alert("Cache Esgotado! O deck e a mão de todos os especialistas estão vazios. Compilando o algoritmo final...");
     triggerSimulationCompile();
+    return;
   } else {
     startProgrammingPhase();
   }

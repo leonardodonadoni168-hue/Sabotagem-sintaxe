@@ -60,7 +60,17 @@ const CARD_TYPES = {
   // Cartas de Ações Especiais (Mesa)
   REVEAL: { id: "reveal_card", name: "Scanner de Bloco", type: "action", desc: "Revela publicamente um bloco oculto na fila", icon: "👁️" },
   DELETE: { id: "delete_card", name: "Depurar Linha", type: "action", desc: "Remove um bloco qualquer da fila de comandos", icon: "🗑️" },
-  INVERT: { id: "invert_card", name: "Refatorar Curva", type: "action", desc: "Altera uma curva de esquerda para direita ou vice-versa", icon: "🔄" }
+  INVERT: { id: "invert_card", name: "Refatorar Curva", type: "action", desc: "Altera uma curva de esquerda para direita ou vice-versa", icon: "🔄" },
+  
+  // Cartas de Bloqueio de Terminal (Sabotagem)
+  BLOCK_COMPILER: { id: "block_compiler", name: "Bug de Compilador", type: "block", desc: "Bloqueia o compilador de um jogador. Ele não pode programar.", icon: "🛠️", blockType: "COMPILER" },
+  BLOCK_CONNECTION: { id: "block_connection", name: "Falha de Conexão", type: "block", desc: "Corta a conexão de rede de um jogador. Ele não pode programar.", icon: "📶", blockType: "CONNECTION" },
+  BLOCK_HARDWARE: { id: "block_hardware", name: "CPU Sobrecarga", type: "block", desc: "Superaquece a CPU de um jogador. Ele não pode programar.", icon: "🔥", blockType: "HARDWARE" },
+  
+  // Cartas de Patches de Reparo
+  REPAIR_COMPILER: { id: "repair_compiler", name: "Patch de Sintaxe", type: "repair", desc: "Libera o compilador de um jogador bloqueado.", icon: "✅", blockType: "COMPILER" },
+  REPAIR_CONNECTION: { id: "repair_connection", name: "Ping Estável", type: "repair", desc: "Restabelece a rede de um jogador bloqueado.", icon: "⚡", blockType: "CONNECTION" },
+  REPAIR_HARDWARE: { id: "repair_hardware", name: "Reset Hardware", type: "repair", desc: "Esfria e reinicia a CPU de um jogador bloqueado.", icon: "❄️", blockType: "HARDWARE" }
 };
 
 // Baralho mestre de distribuição
@@ -78,7 +88,13 @@ const BASE_DECK = [
   ...Array(3).fill("IF_CLEAR"),
   ...Array(2).fill("REVEAL"),
   ...Array(2).fill("DELETE"),
-  ...Array(2).fill("INVERT")
+  ...Array(2).fill("INVERT"),
+  ...Array(2).fill("BLOCK_COMPILER"),
+  ...Array(2).fill("BLOCK_CONNECTION"),
+  ...Array(2).fill("BLOCK_HARDWARE"),
+  ...Array(2).fill("REPAIR_COMPILER"),
+  ...Array(2).fill("REPAIR_CONNECTION"),
+  ...Array(2).fill("REPAIR_HARDWARE")
 ];
 
 const gameState = {
@@ -118,7 +134,8 @@ function setupGame(names) {
     hand: [],
     skillUsed: false, // Controla uso de habilidade por rodada
     hiddenCardsPlayed: 0, // Quantidade de cartas ocultas jogadas na rodada
-    score: 0 // Pontuação individual
+    score: 0, // Pontuação individual
+    blocks: [] // Tipos de bloqueios ativos: "COMPILER", "CONNECTION", "HARDWARE"
   }));
   
   gameState.currentLevelIndex = 0;
@@ -156,6 +173,7 @@ function startRound() {
     player.hand = [];
     player.skillUsed = false; // Reseta habilidade
     player.hiddenCardsPlayed = 0; // Reseta limite de cartas ocultas
+    player.blocks = []; // Reseta bloqueios
   });
   
   // 2. Filtrar baralho pelas regras do nível atual
@@ -213,6 +231,11 @@ function playCommandCard(playerIndex, cardIndex, isHidden) {
   
   if (!card || card.type !== "command") return false;
   
+  // Impede de jogar comandos se o terminal estiver bloqueado
+  if (player.blocks && player.blocks.length > 0) {
+    return false;
+  }
+  
   player.hand.splice(cardIndex, 1);
   
   if (isHidden) {
@@ -238,33 +261,60 @@ function playActionCard(playerIndex, cardIndex, actionData) {
   const player = gameState.players[playerIndex];
   const card = player.hand[cardIndex];
   
-  if (!card || card.type !== "action") return false;
+  if (!card || (card.type !== "action" && card.type !== "block" && card.type !== "repair")) return false;
   
   let success = false;
-  const targetIdx = gameState.commandQueue.findIndex(item => item.id === actionData.targetId);
-  if (targetIdx === -1) return false;
   
-  const target = gameState.commandQueue[targetIdx];
-  
-  if (card.id === "reveal_card") {
-    if (target.isHidden) {
-      target.revealed = true;
-      logAction(`${player.name} rodou um Scanner e descriptografou o bloco de ${target.ownerName}: "${target.card.name}".`);
+  if (card.type === "block" || card.type === "repair") {
+    // Para cartas de bloqueio e reparo, o target é o ID do jogador
+    const targetPlayer = gameState.players[actionData.targetPlayerId];
+    if (!targetPlayer) return false;
+    
+    if (card.type === "block") {
+      // O jogador não pode se auto-bloquear
+      if (player.id === targetPlayer.id) return false;
+      
+      // Não pode aplicar se o jogador já tiver esse bloqueio específico
+      if (targetPlayer.blocks.includes(card.blockType)) return false;
+      
+      targetPlayer.blocks.push(card.blockType);
+      logAction(`${player.name} sabotou o terminal de ${targetPlayer.name} usando "${card.name}" [${card.blockType}].`);
+      success = true;
+    } else {
+      // Reparo: o jogador alvo deve possuir esse bloqueio específico ativo
+      if (!targetPlayer.blocks.includes(card.blockType)) return false;
+      
+      targetPlayer.blocks = targetPlayer.blocks.filter(b => b !== card.blockType);
+      logAction(`${player.name} aplicou um patch de correção em ${targetPlayer.name} resolvendo a falha "${card.name}" [${card.blockType}].`);
       success = true;
     }
-  } else if (card.id === "delete_card") {
-    logAction(`${player.name} forçou uma Depuração e removeu o comando "${target.card.name}" na linha ${targetIdx + 1}.`);
-    gameState.commandQueue.splice(targetIdx, 1);
-    success = true;
-  } else if (card.id === "invert_card") {
-    if (target.card.id === "left") {
-      target.card = CARD_TYPES.RIGHT;
-      logAction(`${player.name} alterou a curvatura de ${target.ownerName} para "Virar Direita".`);
+  } else {
+    // Lógica das ações padrão de fila
+    const targetIdx = gameState.commandQueue.findIndex(item => item.id === actionData.targetId);
+    if (targetIdx === -1) return false;
+    
+    const target = gameState.commandQueue[targetIdx];
+    
+    if (card.id === "reveal_card") {
+      if (target.isHidden) {
+        target.revealed = true;
+        logAction(`${player.name} rodou um Scanner e descriptografou o bloco de ${target.ownerName}: "${target.card.name}".`);
+        success = true;
+      }
+    } else if (card.id === "delete_card") {
+      logAction(`${player.name} forçou uma Depuração e removeu o comando "${target.card.name}" na linha ${targetIdx + 1}.`);
+      gameState.commandQueue.splice(targetIdx, 1);
       success = true;
-    } else if (target.card.id === "right") {
-      target.card = CARD_TYPES.LEFT;
-      logAction(`${player.name} alterou a curvatura de ${target.ownerName} para "Virar Esquerda".`);
-      success = true;
+    } else if (card.id === "invert_card") {
+      if (target.card.id === "left") {
+        target.card = CARD_TYPES.RIGHT;
+        logAction(`${player.name} alterou a curvatura de ${target.ownerName} para "Virar Direita".`);
+        success = true;
+      } else if (target.card.id === "right") {
+        target.card = CARD_TYPES.LEFT;
+        logAction(`${player.name} alterou a curvatura de ${target.ownerName} para "Virar Esquerda".`);
+        success = true;
+      }
     }
   }
   

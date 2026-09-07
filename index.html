@@ -89,6 +89,13 @@
           <div class="mini-map-container">
             <div id="playing-mini-map"></div>
           </div>
+          <div style="margin-top: 1rem; border-top: 1px solid var(--border-color); padding-top: 0.8rem;">
+            <div style="font-size: 0.75rem; font-weight: 700; color: var(--neon-cyan); margin-bottom: 0.4rem;">
+              🛠️ Status dos Terminais (Sabotagens):
+            </div>
+            <div id="player-status-widget" style="display: flex; flex-direction: column; gap: 0.4rem;"></div>
+          </div>
+
           <div style="margin-top: auto; padding-top: 1rem; border-top: 1px solid var(--border-color); font-size: 0.75rem;">
             <span class="text-yellow">Legenda:</span> S=Início | G=Saída | 🔑=Chave | 🚪=Porta | ⚡=Laser | 🔘=Botão
           </div>
@@ -137,8 +144,18 @@
                 <div class="play-controls">
                   <button class="btn btn-green btn-disabled" id="btn-play-visible">📥 Inserir Visível (Fila Principal)</button>
                   <button class="btn btn-pink btn-disabled" id="btn-play-hidden">👻 Inserir Oculto (Stealth)</button>
+                  
+                  <!-- Controles de Alvo para Bloqueio e Reparo -->
+                  <div id="action-target-controls" style="display: none; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+                    <label for="action-target-select" class="text-cyan" style="font-size: 0.85rem; font-weight: 700;">Selecionar Alvo:</label>
+                    <select id="action-target-select" style="background: rgba(0,0,0,0.6); border: 1px solid var(--border-color); color: var(--text-primary); padding: 0.4rem; border-radius: 4px; font-family: var(--font-display); font-size: 0.85rem; outline: none;"></select>
+                    <button class="btn btn-yellow" id="btn-play-action-target">⚠️ Executar Ação</button>
+                  </div>
                 </div>
-                <button class="btn btn-pink btn-disabled" id="btn-discard">🗑️ Descartar</button>
+                <div style="display: flex; gap: 0.5rem;">
+                  <button class="btn btn-pink btn-disabled" id="btn-discard">🗑️ Descartar</button>
+                  <button class="btn btn-yellow" id="btn-pass-turn">⏭️ Passar Turno</button>
+                </div>
               </div>
             </div>
           </div>
