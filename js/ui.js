@@ -215,7 +215,7 @@ function renderRoleRevealScreen() {
     elements.roleRevealButtons.appendChild(btn);
   });
   
-  elements.btnBeginProgramming.classList.add("btn-disabled");
+  elements.btnBeginProgramming.classList.remove("btn-disabled");
   showScreen(elements.screenRoleReveal);
 }
 
