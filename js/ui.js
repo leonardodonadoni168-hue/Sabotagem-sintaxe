@@ -267,6 +267,42 @@ elements.btnBeginProgramming.addEventListener("click", () => {
 
 // --- TELA 3: PROGRAMAÇÃO ---
 
+function renderMiniMap(level) {
+  if (!elements.playingMiniMap) return;
+  elements.playingMiniMap.innerHTML = "";
+  const grid = level.grid;
+  
+  elements.playingMiniMap.style.display = "grid";
+  elements.playingMiniMap.style.gridTemplateRows = `repeat(${grid.length}, 22px)`;
+  elements.playingMiniMap.style.gridTemplateColumns = `repeat(${grid[0].length}, 22px)`;
+  elements.playingMiniMap.style.gap = "2px";
+  
+  for (let r = 0; r < grid.length; r++) {
+    for (let c = 0; c < grid[0].length; c++) {
+      const cell = document.createElement("div");
+      cell.style.width = "22px";
+      cell.style.height = "22px";
+      cell.style.borderRadius = "2px";
+      cell.style.display = "flex";
+      cell.style.alignItems = "center";
+      cell.style.justifyContent = "center";
+      cell.style.fontSize = "0.7rem";
+      
+      const val = grid[r][c];
+      if (val === "#") cell.style.background = "#232836";
+      else if (val === "S") cell.style.background = "var(--neon-cyan)";
+      else if (val === "G") cell.style.background = "var(--neon-green)";
+      else if (val === "T") cell.style.background = "var(--neon-pink)";
+      else if (val === "K") { cell.style.background = "rgba(254, 254, 51, 0.15)"; cell.innerText = "🔑"; }
+      else if (val === "D") { cell.style.background = "rgba(249, 115, 22, 0.15)"; cell.innerText = "🚪"; }
+      else if (val === "B") { cell.style.background = "rgba(0, 242, 254, 0.15)"; cell.innerText = "🔘"; }
+      else cell.style.background = "rgba(255,255,255,0.03)";
+      
+      elements.playingMiniMap.appendChild(cell);
+    }
+  }
+}
+
 function startProgrammingPhase() {
   selectedHandCardIdx = null;
   activeSkillMode = null;
